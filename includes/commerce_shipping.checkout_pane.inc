@@ -261,9 +261,14 @@ function commerce_shipping_recalculate_services_submit($form, &$form_state) {
         }
 
         // Unset any cached addressfield data for this customer profile.
-        foreach ($form_state['addressfield'] as $key => $value) {
-          if (strpos($key, 'commerce_customer_profile|' . $type) === 0) {
-            unset($form_state['addressfield'][$key]);
+        foreach (field_read_fields(array('type' => 'addressfield')) as $field) {
+          if (isset($form_state['input']['customer_profile_' . $type][$field['field_name']])) {
+            foreach ($form_state['input']['customer_profile_' . $type][$field['field_name']][LANGUAGE_NONE][0] as $key => &$value) {
+              if ($key == 'country') {
+                continue;
+              }
+              $value = '';
+            }
           }
         }
       }

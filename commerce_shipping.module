@@ -1023,17 +1023,6 @@ function commerce_shipping_delete_shipping_line_items($order, $skip_save = FALSE
 }
 
 /**
- * Implements hook_commerce_order_update().
- *
- * When an order is updated, we have no way of knowing if new information on the
- * order demands a recalculation of shipping rates. To be safe, we simply clear
- * the cached rates for an order any time that order is updated.
- */
-function commerce_shipping_commerce_order_update($order) {
-  commerce_shipping_rates_cache_clear($order);
-}
-
-/**
  * Adds a shipping line item to an order.
  *
  * @param $line_item

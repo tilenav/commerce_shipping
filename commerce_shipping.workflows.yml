@@ -1,0 +1,13 @@
+shipment_default:
+  id: shipment_default
+  group: commerce_shipment
+  label: 'Default'
+  states:
+    draft:
+      label: 'Draft'
+    ready:
+      label: 'Ready'
+    shipped:
+      label: 'Shipped'
+    canceled:
+      label: 'Canceled'

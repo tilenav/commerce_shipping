@@ -2,7 +2,7 @@
 
 namespace Drupal\commerce_shipping\Entity;
 
-use Drupal\commerce_shipping\Plugin\Commerce\PackageType\PackageTypeInterface;
+use Drupal\commerce_shipping\Plugin\Commerce\PackageType\PackageTypeInterface as PackageTypePluginInterface;
 use Drupal\commerce_shipping\ShipmentItem;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
@@ -71,7 +71,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
   /**
    * {@inheritdoc}
    */
-  public function setPackageType(PackageTypeInterface $package_type) {
+  public function setPackageType(PackageTypePluginInterface $package_type) {
     $this->set('package_type', $package_type->getId());
     return $this;
   }

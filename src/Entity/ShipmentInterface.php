@@ -2,13 +2,12 @@
 
 namespace Drupal\commerce_shipping\Entity;
 
-use Drupal\commerce_shipping\Plugin\Commerce\PackageType\PackageTypeInterface;
+use Drupal\commerce_shipping\Plugin\Commerce\PackageType\PackageTypeInterface as PackageTypePluginInterface;
 use Drupal\commerce_shipping\ShipmentItem;
 use Drupal\commerce_order\EntityAdjustableInterface;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
-use Drupal\physical\Measurement;
 use Drupal\physical\Weight;
 use Drupal\profile\Entity\ProfileInterface;
 
@@ -49,7 +48,7 @@ interface ShipmentInterface extends ContentEntityInterface, EntityAdjustableInte
    *
    * @return $this
    */
-  public function setPackageType(PackageTypeInterface $package_type);
+  public function setPackageType(PackageTypePluginInterface $package_type);
 
   /**
    * Gets the shipping method.

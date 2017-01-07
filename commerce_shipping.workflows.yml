@@ -11,3 +11,16 @@ shipment_default:
       label: 'Shipped'
     canceled:
       label: 'Canceled'
+  transitions:
+    finalize:
+      label: 'Finalize shipment'
+      from: [draft]
+      to:   ready
+    ship:
+      label: 'Send shipment'
+      from: [ready]
+      to: shipped
+    cancel:
+      label: 'Cancel shipment'
+      from: [draft, ready]
+      to:   canceled

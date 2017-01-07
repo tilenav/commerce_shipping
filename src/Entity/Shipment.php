@@ -381,7 +381,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ->setLabel(t('State'))
       ->setDescription(t('The shipment state.'))
       ->setRequired(TRUE)
-      ->setSetting('max_length', 255)
+      ->setSetting('workflow', 'shipment_default')
       ->setDisplayOptions('view', [
         'label' => 'hidden',
         'type' => 'state_transition_form',

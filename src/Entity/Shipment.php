@@ -37,6 +37,7 @@ use Drupal\profile\Entity\ProfileInterface;
  *     "id" = "shipment_id",
  *     "uuid" = "uuid",
  *   },
+ *   field_ui_base_route = "entity.commerce_shipment.settings"
  * )
  */
 class Shipment extends ContentEntityBase implements ShipmentInterface {

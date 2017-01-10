@@ -211,14 +211,14 @@ class ShippingMethod extends ContentEntityBase implements ShippingMethodInterfac
       ->setLabel(t('Weight'))
       ->setDescription(t('The weight of this shipping method in relation to others.'))
       ->setDefaultValue(0)
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'hidden',
         'type' => 'integer',
         'weight' => 0,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'hidden',
-      ));
+      ]);
 
     $fields['status'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Enabled'))

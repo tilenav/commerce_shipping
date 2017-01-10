@@ -2,7 +2,7 @@
 
 namespace Drupal\commerce_shipping\Plugin\Field\FieldType;
 
-use Drupal\commerce_shipping\ShipmentItem;
+use Drupal\commerce_shipping\ShipmentItem as ShipmentItemValue;
 use Drupal\Core\Field\FieldItemList;
 
 /**
@@ -26,7 +26,7 @@ class ShipmentItemList extends FieldItemList implements ShipmentItemListInterfac
   /**
    * {@inheritdoc}
    */
-  public function removeShipmentItem(ShipmentItem $shipment_item) {
+  public function removeShipmentItem(ShipmentItemValue $shipment_item) {
     /** @var \Drupal\commerce_shipping\Plugin\Field\FieldType\ShipmentItem $field_item */
     foreach ($this->list as $key => $field_item) {
       if ($field_item->value === $shipment_item) {

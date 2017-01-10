@@ -2,7 +2,7 @@
 
 namespace Drupal\commerce_shipping\Plugin\Field\FieldType;
 
-use Drupal\commerce_shipping\ShipmentItem;
+use Drupal\commerce_shipping\ShipmentItem as ShipmentItemValue;
 use Drupal\Core\Field\FieldItemListInterface;
 
 /**
@@ -26,6 +26,6 @@ interface ShipmentItemListInterface extends FieldItemListInterface {
    *
    * @return $this
    */
-  public function removeShipmentItem(ShipmentItem $shipment_item);
+  public function removeShipmentItem(ShipmentItemValue $shipment_item);
 
 }

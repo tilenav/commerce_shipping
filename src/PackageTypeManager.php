@@ -80,7 +80,7 @@ class PackageTypeManager extends DefaultPluginManager implements PackageTypeMana
     }
     if (isset($definition['weight'])) {
       foreach (['number', 'unit'] as $weight_property) {
-        if (empty($definition['weight'][$weight_property])) {
+        if (!isset($definition['weight'][$weight_property])) {
           throw new PluginException(sprintf('The package type "%s" property "weight" must have a "%s" key.', $plugin_id, $weight_property));
         }
       }

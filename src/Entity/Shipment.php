@@ -3,6 +3,7 @@
 namespace Drupal\commerce_shipping\Entity;
 
 use Drupal\commerce_shipping\Plugin\Commerce\PackageType\PackageTypeInterface as PackageTypePluginInterface;
+use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
 use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
@@ -43,6 +44,27 @@ use Drupal\profile\Entity\ProfileInterface;
 class Shipment extends ContentEntityBase implements ShipmentInterface {
 
   use EntityChangedTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function populateFromProposedShipment(ProposedShipment $proposed_shipment) {
+    $this->set('order_id', $proposed_shipment->getOrderId());
+    $this->set('items', $proposed_shipment->getItems());
+    $this->set('package_type', $proposed_shipment->getPackageTypeId());
+    foreach ($proposed_shipment->getCustomFields() as $field_name => $value) {
+      if ($this->hasField($field_name)) {
+        $this->set($field_name, $value);
+      }
+    }
+    // @todo
+    // Remove this workaround when entity_reference_revisions gets
+    // fixed to accept just the target_id.
+    $profile_storage = $this->entityTypeManager()->getStorage('profile');
+    $shipping_profile = $profile_storage->load($proposed_shipment->getShippingProfileId());
+    $this->set('shipping_profile', $shipping_profile);
+    // @todo Reset the shipping method/service/amount if the items changed.
+  }
 
   /**
    * {@inheritdoc}

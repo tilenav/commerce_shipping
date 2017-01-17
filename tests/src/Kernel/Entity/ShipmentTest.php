@@ -7,6 +7,7 @@ use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_order\Entity\Order;
 use Drupal\commerce_shipping\Entity\Shipment;
 use Drupal\commerce_shipping\Entity\ShippingMethod;
+use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
 use Drupal\physical\Weight;
 use Drupal\profile\Entity\Profile;
@@ -195,6 +196,43 @@ class ShipmentTest extends CommerceKernelTestBase {
 
     $shipment->setShippedTime(635879800);
     $this->assertEquals(635879800, $shipment->getShippedTime());
+  }
+
+  /**
+   * @covers ::populateFromProposedShipment
+   */
+  public function testPopulatingFromProposedShipment() {
+    /** @var \Drupal\profile\Entity\ProfileInterface $profile */
+    $profile = Profile::create([
+      'type' => 'customer',
+    ]);
+    $profile->save();
+    $profile = $this->reloadEntity($profile);
+
+    $proposed_shipment = new ProposedShipment([
+      'order_id' => 10,
+      'shipping_profile_id' => $profile->id(),
+      'items' => [
+        new ShipmentItem([
+          'purchased_entity_id' => 2,
+          'purchased_entity_type' => 'commerce_product_variation',
+          'quantity' => 1,
+        ]),
+      ],
+      'package_type_id' => 'custom_box',
+      // State is not a custom field, but it simplifies this test.
+      'custom_fields' => [
+        'state' => 'ready',
+      ],
+    ]);
+    $shipment = Shipment::create();
+    $shipment->populateFromProposedShipment($proposed_shipment);
+
+    $this->assertEquals($proposed_shipment->getOrderId(), $shipment->getOrderId());
+    $this->assertEquals($profile, $shipment->getShippingProfile());
+    $this->assertEquals($proposed_shipment->getItems(), $shipment->getItems());
+    $this->assertEquals($proposed_shipment->getPackageTypeId(), $shipment->getPackageType()->getId());
+    $this->assertEquals('ready', $shipment->getState()->value);
   }
 
 }

@@ -6,10 +6,6 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\physical\LengthUnit;
-use Drupal\physical\Measurement;
-use Drupal\physical\Plugin\Field\FieldType\DimensionItem;
-use Drupal\physical\Plugin\Field\FieldType\MeasurementItem;
-use Drupal\physical\Weight;
 use Drupal\physical\WeightUnit;
 
 /**

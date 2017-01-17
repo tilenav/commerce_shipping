@@ -57,4 +57,5 @@ class PackageTypeDeriver extends DeriverBase implements ContainerDeriverInterfac
 
     return $plugin_definitions;
   }
+
 }

@@ -82,6 +82,8 @@ class ShipmentTest extends CommerceKernelTestBase {
    * @covers ::getTrackingCode
    * @covers ::setTrackingCode
    * @covers ::getState
+   * @covers ::getData
+   * @covers ::setData
    * @covers ::getCreatedTime
    * @covers ::setCreatedTime
    * @covers ::getShippedTime
@@ -190,6 +192,10 @@ class ShipmentTest extends CommerceKernelTestBase {
     $this->assertEquals($tracking_code, $shipment->getTrackingCode());
 
     $this->assertEquals('ready', $shipment->getState()->value);
+
+    $this->assertEquals('default', $shipment->getData('test', 'default'));
+    $shipment->setData('test', 'value');
+    $this->assertEquals('value', $shipment->getData('test', 'default'));
 
     $shipment->setCreatedTime(635879700);
     $this->assertEquals(635879700, $shipment->getCreatedTime());

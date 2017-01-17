@@ -241,6 +241,33 @@ interface ShipmentInterface extends ContentEntityInterface, EntityAdjustableInte
   public function getState();
 
   /**
+   * Gets a shipment data value with the given key.
+   *
+   * Used to store temporary data.
+   *
+   * @param string $key
+   *   The key.
+   * @param mixed $default
+   *   The default value.
+   *
+   * @return array
+   *   The shipment data.
+   */
+  public function getData($key, $default = NULL);
+
+  /**
+   * Sets a shipment data value with the given key.
+   *
+   * @param string $key
+   *   The key.
+   * @param mixed $value
+   *   The value.
+   *
+   * @return $this
+   */
+  public function setData($key, $value);
+
+  /**
    * Gets the shipment creation timestamp.
    *
    * @return int

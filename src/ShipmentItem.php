@@ -29,13 +29,20 @@ final class ShipmentItem {
   protected $quantity;
 
   /**
+   * The source order item ID.
+   *
+   * @var string
+   */
+  protected $orderItemId;
+
+  /**
    * Constructs a new ShipmentItem object.
    *
    * @param array $definition
    *   The definition.
    */
   public function __construct(array $definition) {
-    foreach (['purchased_entity_id', 'purchased_entity_type', 'quantity'] as $required_property) {
+    foreach (['purchased_entity_id', 'purchased_entity_type', 'quantity', 'order_item_id'] as $required_property) {
       if (empty($definition[$required_property])) {
         throw new \InvalidArgumentException(sprintf('Missing required property %s.', $required_property));
       }
@@ -44,6 +51,7 @@ final class ShipmentItem {
     $this->purchasedEntityId = $definition['purchased_entity_id'];
     $this->purchasedEntityTypeId = $definition['purchased_entity_type'];
     $this->quantity = $definition['quantity'];
+    $this->orderItemId = $definition['order_item_id'];
   }
 
   /**
@@ -74,6 +82,19 @@ final class ShipmentItem {
    */
   public function getQuantity() {
     return $this->quantity;
+  }
+
+  /**
+   * Gets the source order item ID.
+   *
+   * Note that an order item might correspond to multiple shipment items,
+   * depending on the used packer.
+   *
+   * @return string
+   *   The order item ID.
+   */
+  public function getOrderItemId() {
+    return $this->orderItemId;
   }
 
 }

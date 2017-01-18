@@ -71,6 +71,7 @@ class DefaultPackerTest extends UnitTestCase {
           'purchased_entity_id' => 3001,
           'purchased_entity_type' => 'commerce_product_variation',
           'quantity' => 3,
+          'order_item_id' => 2002,
         ]),
       ],
     ]);

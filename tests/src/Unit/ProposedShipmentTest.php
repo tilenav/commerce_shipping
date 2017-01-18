@@ -33,6 +33,7 @@ class ProposedShipmentTest extends UnitTestCase {
           'purchased_entity_id' => 2,
           'purchased_entity_type' => 'commerce_product_variation',
           'quantity' => 1,
+          'order_item_id' => 10,
         ]),
       ],
       'package_type_id' => 'default',
@@ -65,6 +66,7 @@ class ProposedShipmentTest extends UnitTestCase {
       'purchased_entity_id' => 2,
       'purchased_entity_type' => 'commerce_product_variation',
       'quantity' => 1,
+      'order_item_id' => 10,
     ]);
     $items = $this->proposedShipment->getItems();
     $this->assertArrayEquals($expected_items, $items);

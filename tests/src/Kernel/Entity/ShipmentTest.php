@@ -154,11 +154,13 @@ class ShipmentTest extends CommerceKernelTestBase {
       'purchased_entity_id' => 1,
       'purchased_entity_type' => 'commerce_product_variation',
       'quantity' => 2,
+      'order_item_id' => 10,
     ]);
     $items[] = new ShipmentItem([
       'purchased_entity_id' => 2,
       'purchased_entity_type' => 'commerce_product_variation',
       'quantity' => 2,
+      'order_item_id' => 10,
     ]);
     $shipment->addItem($items[0]);
     $shipment->addItem($items[1]);
@@ -223,6 +225,7 @@ class ShipmentTest extends CommerceKernelTestBase {
           'purchased_entity_id' => 2,
           'purchased_entity_type' => 'commerce_product_variation',
           'quantity' => 1,
+          'order_item_id' => 10,
         ]),
       ],
       'package_type_id' => 'custom_box',

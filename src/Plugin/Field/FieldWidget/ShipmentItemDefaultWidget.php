@@ -36,6 +36,7 @@ class ShipmentItemDefaultWidget extends WidgetBase {
         'purchased_entity_id' => $value['purchased_entity_id'],
         'purchased_entity_type' => $value['purchased_entity_type'],
         'quantity' => $value['quantity'],
+        'order_item_id' => $value['order_item_id'],
       ]);
     }
     return $values;

@@ -37,6 +37,7 @@ class DefaultPacker implements PackerInterface {
         'purchased_entity_id' => $purchased_entity->id(),
         'purchased_entity_type' => $purchased_entity->getEntityTypeId(),
         'quantity' => $order_item->getQuantity(),
+        'order_item_id' => $order_item->id(),
       ]);
     }
 

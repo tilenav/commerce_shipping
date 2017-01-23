@@ -370,13 +370,12 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['shipping_profile'] = BaseFieldDefinition::create('entity_reference_revisions')
-      ->setLabel(t('Shipping profile'))
-      ->setDescription(t('Shipping profile'))
+      ->setLabel(t('Shipping information'))
       ->setSetting('target_type', 'profile')
       ->setSetting('handler', 'default')
       ->setSetting('handler_settings', ['target_bundles' => ['customer']])
       ->setDisplayOptions('form', [
-        'type' => 'options_select',
+        'type' => 'commerce_shipping_profile',
         'weight' => 0,
         'settings' => [],
       ])

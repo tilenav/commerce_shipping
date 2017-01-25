@@ -9,6 +9,7 @@ use Drupal\commerce_shipping\Entity\Shipment;
 use Drupal\commerce_shipping\Entity\ShippingMethod;
 use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\physical\Weight;
 use Drupal\profile\Entity\Profile;
 use Drupal\Tests\commerce\Kernel\CommerceKernelTestBase;
@@ -88,6 +89,7 @@ class ShipmentTest extends CommerceKernelTestBase {
    * @covers ::setCreatedTime
    * @covers ::getShippedTime
    * @covers ::setShippedTime
+   * @covers ::recalculateWeight
    */
   public function testShipment() {
     $user = $this->createUser(['mail' => $this->randomString() . '@example.com']);
@@ -141,25 +143,19 @@ class ShipmentTest extends CommerceKernelTestBase {
     $shipment->setShippingProfile($profile);
     $this->assertEquals($profile, $shipment->getShippingProfile());
 
-    $weight = new Weight('4', 'kg');
-    $shipment->setWeight($weight);
-    $this->assertEquals($weight, $shipment->getWeight());
-
-    $amount = new Price('10.00', 'USD');
-    $shipment->setAmount($amount);
-    $this->assertEquals($amount, $shipment->getAmount());
-
     $items = [];
     $items[] = new ShipmentItem([
       'purchased_entity_id' => 1,
       'purchased_entity_type' => 'commerce_product_variation',
       'quantity' => 2,
+      'weight' => new Weight('20', 'kg'),
       'order_item_id' => 10,
     ]);
     $items[] = new ShipmentItem([
       'purchased_entity_id' => 2,
       'purchased_entity_type' => 'commerce_product_variation',
       'quantity' => 2,
+      'weight' => new Weight('15', 'kg'),
       'order_item_id' => 10,
     ]);
     $shipment->addItem($items[0]);
@@ -169,6 +165,16 @@ class ShipmentTest extends CommerceKernelTestBase {
     $this->assertEquals([$items[1]], $shipment->getItems());
     $shipment->setItems($items);
     $this->assertEquals($items, $shipment->getItems());
+
+    $calculated_weight = new Weight('70', 'kg');
+    $this->assertEquals($calculated_weight, $shipment->getWeight()->convert('kg'));
+    $new_weight = new Weight('4', 'kg');
+    $shipment->setWeight($new_weight);
+    $this->assertEquals($new_weight, $shipment->getWeight());
+
+    $amount = new Price('10.00', 'USD');
+    $shipment->setAmount($amount);
+    $this->assertEquals($amount, $shipment->getAmount());
 
     $adjustments = [];
     $adjustments[] = new Adjustment([
@@ -225,6 +231,7 @@ class ShipmentTest extends CommerceKernelTestBase {
           'purchased_entity_id' => 2,
           'purchased_entity_type' => 'commerce_product_variation',
           'quantity' => 1,
+          'weight' => new Weight('10', 'kg'),
           'order_item_id' => 10,
         ]),
       ],
@@ -242,6 +249,18 @@ class ShipmentTest extends CommerceKernelTestBase {
     $this->assertEquals($proposed_shipment->getItems(), $shipment->getItems());
     $this->assertEquals($proposed_shipment->getPackageTypeId(), $shipment->getPackageType()->getId());
     $this->assertEquals('ready', $shipment->getState()->value);
+  }
+
+  /**
+   * @covers ::preSave
+   */
+  public function testEmptyValidation() {
+    $shipment = Shipment::create([
+      'order_id' => 10,
+      'package_type' => 'custom_box',
+    ]);
+    $this->setExpectedException(EntityStorageException::class, 'Required shipment field "shipping_method" is empty.');
+    $shipment->save();
   }
 
 }

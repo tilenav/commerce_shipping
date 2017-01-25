@@ -4,6 +4,7 @@ namespace Drupal\Tests\commerce_shipping\Unit;
 
 use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
+use Drupal\physical\Weight;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -33,6 +34,7 @@ class ProposedShipmentTest extends UnitTestCase {
           'purchased_entity_id' => 2,
           'purchased_entity_type' => 'commerce_product_variation',
           'quantity' => 1,
+          'weight' => new Weight('10', 'kg'),
           'order_item_id' => 10,
         ]),
       ],
@@ -66,6 +68,7 @@ class ProposedShipmentTest extends UnitTestCase {
       'purchased_entity_id' => 2,
       'purchased_entity_type' => 'commerce_product_variation',
       'quantity' => 1,
+      'weight' => new Weight('10', 'kg'),
       'order_item_id' => 10,
     ]);
     $items = $this->proposedShipment->getItems();

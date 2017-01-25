@@ -9,6 +9,10 @@ use Drupal\commerce_shipping\Packer\PackerInterface;
 use Drupal\commerce_shipping\Packer\DefaultPacker;
 use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
+use Drupal\Core\Field\FieldItemList;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\physical\Plugin\Field\FieldType\MeasurementItem;
+use Drupal\physical\Weight;
 use Drupal\profile\Entity\ProfileInterface;
 use Drupal\Tests\UnitTestCase;
 
@@ -45,9 +49,18 @@ class DefaultPackerTest extends UnitTestCase {
     $first_order_item->getQuantity()->willReturn(1);
     $order_items[] = $first_order_item->reveal(1);
 
+    $weight_item = $this->prophesize(MeasurementItem::class);
+    $weight_item->toMeasurement()->willReturn(new Weight('10', 'kg'));
+
+    $weight_list = $this->prophesize(FieldItemListInterface::class);
+    $weight_list->isEmpty()->willReturn(FALSE);
+    $weight_list->first()->willReturn($weight_item->reveal());
+
     $purchased_entity = $this->prophesize(PurchasableEntityInterface::class);
     $purchased_entity->id()->willReturn(3001);
     $purchased_entity->getEntityTypeId()->willReturn('commerce_product_variation');
+    $purchased_entity->hasField('weight')->willReturn(TRUE);
+    $purchased_entity->get('weight')->willReturn($weight_list->reveal());
     $purchased_entity = $purchased_entity->reveal();
     $second_order_item = $this->prophesize(OrderItemInterface::class);
     $second_order_item->id()->willReturn(2002);
@@ -71,6 +84,7 @@ class DefaultPackerTest extends UnitTestCase {
           'purchased_entity_id' => 3001,
           'purchased_entity_type' => 'commerce_product_variation',
           'quantity' => 3,
+          'weight' => new Weight('30', 'kg'),
           'order_item_id' => 2002,
         ]),
       ],

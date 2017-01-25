@@ -29,6 +29,13 @@ final class ShipmentItem {
   protected $quantity;
 
   /**
+   * The weight.
+   *
+   * @var \Drupal\physical\Weight
+   */
+  protected $weight;
+
+  /**
    * The source order item ID.
    *
    * @var string
@@ -42,7 +49,7 @@ final class ShipmentItem {
    *   The definition.
    */
   public function __construct(array $definition) {
-    foreach (['purchased_entity_id', 'purchased_entity_type', 'quantity', 'order_item_id'] as $required_property) {
+    foreach (['purchased_entity_id', 'purchased_entity_type', 'quantity', 'weight', 'order_item_id'] as $required_property) {
       if (empty($definition[$required_property])) {
         throw new \InvalidArgumentException(sprintf('Missing required property %s.', $required_property));
       }
@@ -51,6 +58,7 @@ final class ShipmentItem {
     $this->purchasedEntityId = $definition['purchased_entity_id'];
     $this->purchasedEntityTypeId = $definition['purchased_entity_type'];
     $this->quantity = $definition['quantity'];
+    $this->weight = $definition['weight'];
     $this->orderItemId = $definition['order_item_id'];
   }
 
@@ -82,6 +90,18 @@ final class ShipmentItem {
    */
   public function getQuantity() {
     return $this->quantity;
+  }
+
+  /**
+   * Gets the weight.
+   *
+   * Represents the weight of the entire shipment item (unit weight * quantity).
+   *
+   * @return \Drupal\physical\Weight
+   *   The weight.
+   */
+  public function getWeight() {
+    return $this->weight;
   }
 
   /**

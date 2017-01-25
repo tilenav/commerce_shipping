@@ -5,6 +5,8 @@ namespace Drupal\commerce_shipping\Packer;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
+use Drupal\physical\Weight;
+use Drupal\physical\WeightUnit;
 use Drupal\profile\Entity\ProfileInterface;
 
 /**
@@ -26,17 +28,24 @@ class DefaultPacker implements PackerInterface {
     $items = [];
     foreach ($order->getItems() as $order_item) {
       $purchased_entity = $order_item->getPurchasedEntity();
-      if (!$purchased_entity) {
-        // The purchased entity holds its weight and dimensions.
-        // Without that, it's not possible to ship an order item.
+      // Ship only shippable purchasable entity types.
+      if (!$purchased_entity || !$purchased_entity->hasField('weight')) {
         continue;
       }
+      // The weight will be empty if the shippable trait was added but the
+      // existing entities were not updated.
+      if ($purchased_entity->get('weight')->isEmpty()) {
+        $purchased_entity->set('weight', new Weight(0, WeightUnit::GRAM));
+      }
 
-      // @todo Skip entities that don't have the shippable trait.
+      $quantity = $order_item->getQuantity();
+      /** @var \Drupal\physical\Weight $weight */
+      $weight = $purchased_entity->get('weight')->first()->toMeasurement();
       $items[] = new ShipmentItem([
         'purchased_entity_id' => $purchased_entity->id(),
         'purchased_entity_type' => $purchased_entity->getEntityTypeId(),
-        'quantity' => $order_item->getQuantity(),
+        'quantity' => $quantity,
+        'weight' => $weight->multiply($quantity),
         'order_item_id' => $order_item->id(),
       ]);
     }

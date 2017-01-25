@@ -9,6 +9,8 @@ use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
+use Drupal\Core\Entity\EntityMalformedException;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\physical\Weight;
@@ -96,6 +98,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
    */
   public function setPackageType(PackageTypePluginInterface $package_type) {
     $this->set('package_type', $package_type->getId());
+    $this->recalculateWeight();
     return $this;
   }
 
@@ -171,6 +174,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
    */
   public function setItems(array $shipment_items) {
     $this->set('items', $shipment_items);
+    $this->recalculateWeight();
     return $this;
   }
 
@@ -179,6 +183,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
    */
   public function addItem(ShipmentItem $shipment_item) {
     $this->get('items')->appendItem($shipment_item);
+    $this->recalculateWeight();
     return $this;
   }
 
@@ -187,6 +192,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
    */
   public function removeItem(ShipmentItem $shipment_item) {
     $this->get('items')->removeShipmentItem($shipment_item);
+    $this->recalculateWeight();
     return $this;
   }
 
@@ -329,6 +335,44 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
   /**
    * {@inheritdoc}
    */
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage);
+
+    $this->recalculateWeight();
+
+    $required_fields = [
+      'order_id', 'package_type', 'shipping_method', 'shipping_service',
+      'shipping_profile', 'items', 'amount', 'weight',
+    ];
+    foreach ($required_fields as $field) {
+      if ($this->get($field)->isEmpty()) {
+        throw new EntityMalformedException(sprintf('Required shipment field "%s" is empty.', $field));
+      }
+    }
+  }
+
+  /**
+   * Recalculates the shipment's weight.
+   */
+  protected function recalculateWeight() {
+    $package_type = $this->getPackageType();
+    if (!$package_type) {
+      // Can't calculate the weight if the package type is still unknown.
+      return;
+    }
+
+    $weight = $package_type->getWeight();
+    foreach ($this->getItems() as $shipment_item) {
+      // @todo ->add() should perform unit conversions automatically.
+      $shipment_item_weight = $shipment_item->getWeight()->convert($weight->getUnit());
+      $weight = $weight->add($shipment_item_weight);
+    }
+    $this->setWeight($weight);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
@@ -337,6 +381,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ->setLabel(t('Order'))
       ->setDescription(t('The parent order.'))
       ->setSetting('target_type', 'commerce_order')
+      ->setRequired(TRUE)
       ->setReadOnly(TRUE);
 
     $fields['package_type'] = BaseFieldDefinition::create('string')
@@ -350,6 +395,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
 
     $fields['shipping_method'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Shipping method'))
+      ->setRequired(TRUE)
       ->setDescription(t('The shipping method'))
       ->setSetting('target_type', 'commerce_shipping_method')
       ->setDisplayOptions('form', [
@@ -362,8 +408,8 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
 
     $fields['shipping_service'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Shipping service'))
-      ->setDescription(t('The shipping service.'))
       ->setRequired(TRUE)
+      ->setDescription(t('The shipping service.'))
       ->setDefaultValue('')
       ->setSetting('max_length', 255)
       ->setDisplayConfigurable('form', TRUE)
@@ -371,6 +417,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
 
     $fields['shipping_profile'] = BaseFieldDefinition::create('entity_reference_revisions')
       ->setLabel(t('Shipping information'))
+      ->setRequired(TRUE)
       ->setSetting('target_type', 'profile')
       ->setSetting('handler', 'default')
       ->setSetting('handler_settings', ['target_bundles' => ['customer']])
@@ -384,13 +431,14 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
 
     $fields['items'] = BaseFieldDefinition::create('commerce_shipment_item')
       ->setLabel(t('Items'))
-      ->setRequired(FALSE)
+      ->setRequired(TRUE)
       ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['weight'] = BaseFieldDefinition::create('physical_measurement')
       ->setLabel(t('Weight'))
+      ->setRequired(TRUE)
       ->setSetting('measurement_type', 'weight')
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -404,7 +452,6 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
 
     $fields['adjustments'] = BaseFieldDefinition::create('commerce_adjustment')
       ->setLabel(t('Adjustments'))
-      ->setRequired(FALSE)
       ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', TRUE);
@@ -412,7 +459,6 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
     $fields['tracking_code'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Tracking code'))
       ->setDescription(t('The shipment tracking code.'))
-      ->setRequired(TRUE)
       ->setDefaultValue('')
       ->setSetting('max_length', 255)
       ->setDisplayConfigurable('form', TRUE)

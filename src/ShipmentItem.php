@@ -8,18 +8,18 @@ namespace Drupal\commerce_shipping;
 final class ShipmentItem {
 
   /**
-   * The purchased entity ID.
+   * The source order item ID.
    *
    * @var string
    */
-  protected $purchasedEntityId;
+  protected $orderItemId;
 
   /**
-   * The purchased entity type ID.
+   * The label.
    *
    * @var string
    */
-  protected $purchasedEntityTypeId;
+  protected $label;
 
   /**
    * The quantity.
@@ -36,11 +36,18 @@ final class ShipmentItem {
   protected $weight;
 
   /**
-   * The source order item ID.
+   * The declared value.
+   *
+   * @var \Drupal\commerce_price\Price
+   */
+  protected $declaredValue;
+
+  /**
+   * The tariff code.
    *
    * @var string
    */
-  protected $orderItemId;
+  protected $tariffCode;
 
   /**
    * Constructs a new ShipmentItem object.
@@ -49,37 +56,45 @@ final class ShipmentItem {
    *   The definition.
    */
   public function __construct(array $definition) {
-    foreach (['purchased_entity_id', 'purchased_entity_type', 'quantity', 'weight', 'order_item_id'] as $required_property) {
+    foreach (['order_item_id', 'label', 'quantity', 'weight', 'declared_value'] as $required_property) {
       if (empty($definition[$required_property])) {
-        throw new \InvalidArgumentException(sprintf('Missing required property %s.', $required_property));
+        throw new \InvalidArgumentException(sprintf('Missing required property "%s".', $required_property));
       }
     }
 
-    $this->purchasedEntityId = $definition['purchased_entity_id'];
-    $this->purchasedEntityTypeId = $definition['purchased_entity_type'];
+    $this->orderItemId = $definition['order_item_id'];
+    $this->label = $definition['label'];
     $this->quantity = $definition['quantity'];
     $this->weight = $definition['weight'];
-    $this->orderItemId = $definition['order_item_id'];
+    $this->declaredValue = $definition['declared_value'];
+    if (!empty($definition['tariff_code'])) {
+      $this->tariffCode = $definition['tariff_code'];
+    }
   }
 
   /**
-   * Gets the purchased entity ID.
+   * Gets the source order item ID.
+   *
+   * Note that an order item might correspond to multiple shipment items,
+   * depending on the used packer.
    *
    * @return string
-   *   The purchased entity ID.
+   *   The order item ID.
    */
-  public function getPurchasedEntityId() {
-    return $this->purchasedEntityId;
+  public function getOrderItemId() {
+    return $this->orderItemId;
   }
 
   /**
-   * Gets the purchased entity type ID.
+   * Gets the label.
+   *
+   * Can be used on customs forms as a description.
    *
    * @return string
-   *   The purchased entity type ID.
+   *   The label.
    */
-  public function getPurchasedEntityTypeId() {
-    return $this->purchasedEntityTypeId;
+  public function getLabel() {
+    return $this->label;
   }
 
   /**
@@ -105,16 +120,29 @@ final class ShipmentItem {
   }
 
   /**
-   * Gets the source order item ID.
+   * Gets the declared value.
    *
-   * Note that an order item might correspond to multiple shipment items,
-   * depending on the used packer.
+   * Represents the value of the entire shipment item (unit value * quantity).
+   * Needed on customs forms.
    *
-   * @return string
-   *   The order item ID.
+   * @return \Drupal\commerce_price\Price
+   *   The declared value.
    */
-  public function getOrderItemId() {
-    return $this->orderItemId;
+  public function getDeclaredValue() {
+    return $this->declaredValue;
+  }
+
+  /**
+   * Gets the tariff code.
+   *
+   * This could be a Harmonized System (HS) code, or a Harmonized Tariff
+   * Schedule (HTS) code. Needed on customs forms.
+   *
+   * @return string|null
+   *   The tariff code, or NULL if not defined.
+   */
+  public function getTariffCode() {
+    return $this->tariffCode;
   }
 
 }

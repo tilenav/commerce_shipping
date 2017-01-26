@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\commerce_shipping\Unit;
 
+use Drupal\commerce_price\Price;
 use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
 use Drupal\physical\Weight;
@@ -31,11 +32,11 @@ class ProposedShipmentTest extends UnitTestCase {
       'shipping_profile_id' => 11,
       'items' => [
         new ShipmentItem([
-          'purchased_entity_id' => 2,
-          'purchased_entity_type' => 'commerce_product_variation',
+          'order_item_id' => 10,
+          'label' => 'T-shirt (red, small)',
           'quantity' => 1,
           'weight' => new Weight('10', 'kg'),
-          'order_item_id' => 10,
+          'declared_value' => new Price('10', 'USD'),
         ]),
       ],
       'package_type_id' => 'default',
@@ -65,11 +66,11 @@ class ProposedShipmentTest extends UnitTestCase {
   public function testGetItems() {
     $expected_items = [];
     $expected_items[] = new ShipmentItem([
-      'purchased_entity_id' => 2,
-      'purchased_entity_type' => 'commerce_product_variation',
+      'order_item_id' => 10,
+      'label' => 'T-shirt (red, small)',
       'quantity' => 1,
       'weight' => new Weight('10', 'kg'),
-      'order_item_id' => 10,
+      'declared_value' => new Price('10', 'USD'),
     ]);
     $items = $this->proposedShipment->getItems();
     $this->assertArrayEquals($expected_items, $items);

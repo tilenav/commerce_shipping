@@ -72,6 +72,7 @@ class ShipmentTest extends CommerceKernelTestBase {
    * @covers ::setItems
    * @covers ::addItem
    * @covers ::removeItem
+   * @covers ::getTotalDeclaredValue
    * @covers ::getWeight
    * @covers ::setWeight
    * @covers ::getAmount
@@ -145,18 +146,18 @@ class ShipmentTest extends CommerceKernelTestBase {
 
     $items = [];
     $items[] = new ShipmentItem([
-      'purchased_entity_id' => 1,
-      'purchased_entity_type' => 'commerce_product_variation',
-      'quantity' => 2,
-      'weight' => new Weight('20', 'kg'),
       'order_item_id' => 10,
+      'label' => 'T-shirt (red, large)',
+      'quantity' => 2,
+      'weight' => new Weight('40', 'kg'),
+      'declared_value' => new Price('30', 'USD'),
     ]);
     $items[] = new ShipmentItem([
-      'purchased_entity_id' => 2,
-      'purchased_entity_type' => 'commerce_product_variation',
-      'quantity' => 2,
-      'weight' => new Weight('15', 'kg'),
       'order_item_id' => 10,
+      'label' => 'T-shirt (blue, large)',
+      'quantity' => 2,
+      'weight' => new Weight('30', 'kg'),
+      'declared_value' => new Price('30', 'USD'),
     ]);
     $shipment->addItem($items[0]);
     $shipment->addItem($items[1]);
@@ -165,6 +166,8 @@ class ShipmentTest extends CommerceKernelTestBase {
     $this->assertEquals([$items[1]], $shipment->getItems());
     $shipment->setItems($items);
     $this->assertEquals($items, $shipment->getItems());
+
+    $this->assertEquals(new Price('60', 'USD'), $shipment->getTotalDeclaredValue());
 
     $calculated_weight = new Weight('70', 'kg');
     $this->assertEquals($calculated_weight, $shipment->getWeight()->convert('kg'));
@@ -228,11 +231,11 @@ class ShipmentTest extends CommerceKernelTestBase {
       'shipping_profile_id' => $profile->id(),
       'items' => [
         new ShipmentItem([
-          'purchased_entity_id' => 2,
-          'purchased_entity_type' => 'commerce_product_variation',
+          'order_item_id' => 10,
+          'label' => 'T-shirt (red, large)',
           'quantity' => 1,
           'weight' => new Weight('10', 'kg'),
-          'order_item_id' => 10,
+          'declared_value' => new Price('15', 'USD'),
         ]),
       ],
       'package_type_id' => 'custom_box',

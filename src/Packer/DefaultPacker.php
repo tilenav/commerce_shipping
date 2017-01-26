@@ -42,11 +42,11 @@ class DefaultPacker implements PackerInterface {
       /** @var \Drupal\physical\Weight $weight */
       $weight = $purchased_entity->get('weight')->first()->toMeasurement();
       $items[] = new ShipmentItem([
-        'purchased_entity_id' => $purchased_entity->id(),
-        'purchased_entity_type' => $purchased_entity->getEntityTypeId(),
+        'order_item_id' => $order_item->id(),
+        'label' => $order_item->getTitle(),
         'quantity' => $quantity,
         'weight' => $weight->multiply($quantity),
-        'order_item_id' => $order_item->id(),
+        'declared_value' => $order_item->getUnitPrice()->multiply($quantity),
       ]);
     }
 

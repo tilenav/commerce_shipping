@@ -170,6 +170,16 @@ interface ShipmentInterface extends ContentEntityInterface, EntityAdjustableInte
   public function removeItem(ShipmentItem $shipment_item);
 
   /**
+   * Gets the total declared value.
+   *
+   * Represents the sum of the declared values of all shipment items.
+   *
+   * @return \Drupal\commerce_price\Price
+   *   The total declared value.
+   */
+  public function getTotalDeclaredValue();
+
+  /**
    * Gets the shipment weight.
    *
    * Calculated by adding the weight of each item to the

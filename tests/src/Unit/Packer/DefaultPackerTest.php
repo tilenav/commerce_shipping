@@ -5,6 +5,7 @@ namespace Drupal\Tests\commerce_shipping\Unit;
 use Drupal\commerce\PurchasableEntityInterface;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_order\Entity\OrderItemInterface;
+use Drupal\commerce_price\Price;
 use Drupal\commerce_shipping\Packer\PackerInterface;
 use Drupal\commerce_shipping\Packer\DefaultPacker;
 use Drupal\commerce_shipping\ProposedShipment;
@@ -64,7 +65,9 @@ class DefaultPackerTest extends UnitTestCase {
     $purchased_entity = $purchased_entity->reveal();
     $second_order_item = $this->prophesize(OrderItemInterface::class);
     $second_order_item->id()->willReturn(2002);
+    $second_order_item->getTitle()->willReturn('T-shirt (red, small)');
     $second_order_item->getPurchasedEntity()->willReturn($purchased_entity);
+    $second_order_item->getUnitPrice()->willReturn(new Price('15', 'USD'));
     $second_order_item->getQuantity()->willReturn(3);
     $order_items[] = $second_order_item->reveal();
 
@@ -81,11 +84,11 @@ class DefaultPackerTest extends UnitTestCase {
       'shipping_profile_id' => 3,
       'items' => [
         new ShipmentItem([
-          'purchased_entity_id' => 3001,
-          'purchased_entity_type' => 'commerce_product_variation',
+          'order_item_id' => 2002,
+          'label' => 'T-shirt (red, small)',
           'quantity' => 3,
           'weight' => new Weight('30', 'kg'),
-          'order_item_id' => 2002,
+          'declared_value' => new Price('45', 'USD'),
         ]),
       ],
     ]);

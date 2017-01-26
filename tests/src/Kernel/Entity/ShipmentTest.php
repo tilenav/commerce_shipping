@@ -70,6 +70,7 @@ class ShipmentTest extends CommerceKernelTestBase {
    * @covers ::setShippingProfile
    * @covers ::getItems
    * @covers ::setItems
+   * @covers ::hasItems
    * @covers ::addItem
    * @covers ::removeItem
    * @covers ::getTotalDeclaredValue
@@ -161,6 +162,7 @@ class ShipmentTest extends CommerceKernelTestBase {
     ]);
     $shipment->addItem($items[0]);
     $shipment->addItem($items[1]);
+    $this->assertTrue($shipment->hasItems());
     $this->assertEquals($items, $shipment->getItems());
     $shipment->removeItem($items[0]);
     $this->assertEquals([$items[1]], $shipment->getItems());

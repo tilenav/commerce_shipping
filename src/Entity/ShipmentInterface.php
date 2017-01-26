@@ -150,6 +150,14 @@ interface ShipmentInterface extends ContentEntityInterface, EntityAdjustableInte
   public function setItems(array $shipment_items);
 
   /**
+   * Gets whether the shipment has items.
+   *
+   * @return bool
+   *   TRUE if the shipment has items, FALSE otherwise.
+   */
+  public function hasItems();
+
+  /**
    * Adds a shipment item.
    *
    * @param \Drupal\commerce_shipping\ShipmentItem $shipment_item

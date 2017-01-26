@@ -181,6 +181,13 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
   /**
    * {@inheritdoc}
    */
+  public function hasItems() {
+    return !$this->get('items')->isEmpty();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function addItem(ShipmentItem $shipment_item) {
     $this->get('items')->appendItem($shipment_item);
     $this->recalculateWeight();

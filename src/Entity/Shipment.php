@@ -59,12 +59,14 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
         $this->set($field_name, $value);
       }
     }
-    // @todo
-    // Remove this workaround when entity_reference_revisions gets
-    // fixed to accept just the target_id.
-    $profile_storage = $this->entityTypeManager()->getStorage('profile');
-    $shipping_profile = $profile_storage->load($proposed_shipment->getShippingProfileId());
-    $this->set('shipping_profile', $shipping_profile);
+    if ($shipping_profile_id = $proposed_shipment->getShippingProfileId()) {
+      // @todo
+      // Remove this workaround when entity_reference_revisions gets
+      // fixed to accept just the target_id.
+      $profile_storage = $this->entityTypeManager()->getStorage('profile');
+      $shipping_profile = $profile_storage->load($proposed_shipment->getShippingProfileId());
+      $this->set('shipping_profile', $shipping_profile);
+    }
     // @todo Reset the shipping method/service/amount if the items changed.
   }
 
@@ -357,13 +359,13 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
 
+    if (empty($this->getPackageType()) && !empty($this->getShippingMethodId())) {
+      $default_package_type = $this->getShippingMethod()->getPlugin()->getDefaultPackageType();
+      $this->set('package_type', $default_package_type->getId());
+    }
     $this->recalculateWeight();
 
-    $required_fields = [
-      'order_id', 'package_type', 'shipping_method', 'shipping_service',
-      'shipping_profile', 'items', 'amount', 'weight',
-    ];
-    foreach ($required_fields as $field) {
+    foreach (['order_id', 'items'] as $field) {
       if ($this->get($field)->isEmpty()) {
         throw new EntityMalformedException(sprintf('Required shipment field "%s" is empty.', $field));
       }
@@ -374,18 +376,29 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
    * Recalculates the shipment's weight.
    */
   protected function recalculateWeight() {
-    $package_type = $this->getPackageType();
-    if (!$package_type) {
-      // Can't calculate the weight if the package type is still unknown.
+    if (!$this->hasItems()) {
+      // Can't calculate the weight if the items are still unavailable.
       return;
     }
 
-    $weight = $package_type->getWeight();
+    /** @var \Drupal\physical\Weight $weight */
+    $weight = NULL;
     foreach ($this->getItems() as $shipment_item) {
-      // @todo ->add() should perform unit conversions automatically.
-      $shipment_item_weight = $shipment_item->getWeight()->convert($weight->getUnit());
-      $weight = $weight->add($shipment_item_weight);
+      $shipment_item_weight = $shipment_item->getWeight();
+      if (!$weight) {
+        $weight = $shipment_item_weight;
+      }
+      else {
+        // @todo ->add() should perform unit conversions automatically.
+        $shipment_item_weight = $shipment_item_weight->convert($weight->getUnit());
+        $weight = $weight->add($shipment_item_weight);
+      }
     }
+    if ($package_type = $this->getPackageType()) {
+      $package_type_weight = $package_type->getWeight()->convert($weight->getUnit());
+      $weight = $weight->add($package_type_weight);
+    }
+
     $this->setWeight($weight);
   }
 
@@ -409,7 +422,6 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ->setRequired(TRUE)
       ->setDefaultValue('')
       ->setSetting('max_length', 255)
-      ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['shipping_method'] = BaseFieldDefinition::create('entity_reference')
@@ -431,7 +443,6 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ->setDescription(t('The shipping service.'))
       ->setDefaultValue('')
       ->setSetting('max_length', 255)
-      ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
     $fields['shipping_profile'] = BaseFieldDefinition::create('entity_reference_revisions')
@@ -442,7 +453,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ->setSetting('handler_settings', ['target_bundles' => ['customer']])
       ->setDisplayOptions('form', [
         'type' => 'commerce_shipping_profile',
-        'weight' => 0,
+        'weight' => -10,
         'settings' => [],
       ])
       ->setDisplayConfigurable('form', TRUE)

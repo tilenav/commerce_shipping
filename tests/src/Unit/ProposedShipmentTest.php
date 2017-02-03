@@ -29,7 +29,6 @@ class ProposedShipmentTest extends UnitTestCase {
 
     $this->proposedShipment = new ProposedShipment([
       'order_id' => 10,
-      'shipping_profile_id' => 11,
       'items' => [
         new ShipmentItem([
           'order_item_id' => 10,
@@ -39,6 +38,7 @@ class ProposedShipmentTest extends UnitTestCase {
           'declared_value' => new Price('10', 'USD'),
         ]),
       ],
+      'shipping_profile_id' => 11,
       'package_type_id' => 'default',
       'custom_fields' => [
         'field_test' => 'value',
@@ -51,13 +51,6 @@ class ProposedShipmentTest extends UnitTestCase {
    */
   public function testGetOrderId() {
     $this->assertEquals(10, $this->proposedShipment->getOrderId());
-  }
-
-  /**
-   * @covers ::getShippingProfileId
-   */
-  public function testGetShippingProfileId() {
-    $this->assertEquals(11, $this->proposedShipment->getShippingProfileId());
   }
 
   /**
@@ -74,6 +67,13 @@ class ProposedShipmentTest extends UnitTestCase {
     ]);
     $items = $this->proposedShipment->getItems();
     $this->assertArrayEquals($expected_items, $items);
+  }
+
+  /**
+   * @covers ::getShippingProfileId
+   */
+  public function testGetShippingProfileId() {
+    $this->assertEquals(11, $this->proposedShipment->getShippingProfileId());
   }
 
   /**

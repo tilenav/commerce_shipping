@@ -20,18 +20,18 @@ class ProposedShipment {
   protected $orderId;
 
   /**
-   * The shipping profile ID.
-   *
-   * @var int
-   */
-  protected $shippingProfileId;
-
-  /**
    * The shipment items.
    *
    * @var \Drupal\commerce_shipping\ShipmentItem[]
    */
   protected $items = [];
+
+  /**
+   * The shipping profile ID.
+   *
+   * @var int
+   */
+  protected $shippingProfileId;
 
   /**
    * The package type plugin ID.
@@ -54,7 +54,7 @@ class ProposedShipment {
    *   The definition.
    */
   public function __construct(array $definition) {
-    foreach (['order_id', 'shipping_profile_id', 'items'] as $required_property) {
+    foreach (['order_id', 'items'] as $required_property) {
       if (empty($definition[$required_property])) {
         throw new \InvalidArgumentException(sprintf('Missing required property "%s".', $required_property));
       }
@@ -66,8 +66,10 @@ class ProposedShipment {
     }
 
     $this->orderId = $definition['order_id'];
-    $this->shippingProfileId = $definition['shipping_profile_id'];
     $this->items = $definition['items'];
+    if (!empty($definition['shipping_profile_id'])) {
+      $this->shippingProfileId = $definition['shipping_profile_id'];
+    }
     if (!empty($definition['package_type_id'])) {
       $this->packageTypeId = $definition['package_type_id'];
     }
@@ -87,16 +89,6 @@ class ProposedShipment {
   }
 
   /**
-   * Gets the shipping profile ID.
-   *
-   * @return int
-   *   The shipping profile ID.
-   */
-  public function getShippingProfileId() {
-    return $this->shippingProfileId;
-  }
-
-  /**
    * Gets the shipment items.
    *
    * @return \Drupal\commerce_shipping\ShipmentItem[]
@@ -104,6 +96,16 @@ class ProposedShipment {
    */
   public function getItems() {
     return $this->items;
+  }
+
+  /**
+   * Gets the shipping profile ID.
+   *
+   * @return int
+   *   The shipping profile ID.
+   */
+  public function getShippingProfileId() {
+    return $this->shippingProfileId;
   }
 
   /**

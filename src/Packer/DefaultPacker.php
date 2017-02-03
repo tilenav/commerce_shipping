@@ -54,8 +54,8 @@ class DefaultPacker implements PackerInterface {
     if (!empty($items)) {
       $proposed_shipments[] = new ProposedShipment([
         'order_id' => $order->id(),
-        'shipping_profile_id' => $shipping_profile->id(),
         'items' => $items,
+        'shipping_profile_id' => $shipping_profile->id(),
       ]);
     }
 

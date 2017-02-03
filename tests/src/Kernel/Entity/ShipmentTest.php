@@ -259,12 +259,45 @@ class ShipmentTest extends CommerceKernelTestBase {
   /**
    * @covers ::preSave
    */
+  public function testDefaults() {
+    /** @var \Drupal\commerce_shipping\Entity\ShippingMethodInterface $shipping_method */
+    $shipping_method = ShippingMethod::create([
+      'name' => $this->randomString(),
+      'plugin' => [
+        'target_plugin_id' => 'flat_rate',
+        'target_plugin_configuration' => [],
+      ],
+      'status' => 1,
+    ]);
+    $shipping_method->save();
+
+    // Saving a shipment with a shipping method but no package type should
+    // populate the package type.
+    $shipment = Shipment::create([
+      'order_id' => 10,
+      'shipping_method' => $shipping_method,
+      'items' => [
+        new ShipmentItem([
+          'order_item_id' => 10,
+          'label' => 'T-shirt (red, large)',
+          'quantity' => 1,
+          'weight' => new Weight('10', 'kg'),
+          'declared_value' => new Price('15', 'USD'),
+        ]),
+      ],
+    ]);
+    $shipment->save();
+    $this->assertEquals('custom_box', $shipment->getPackageType()->getId());
+  }
+
+  /**
+   * @covers ::preSave
+   */
   public function testEmptyValidation() {
     $shipment = Shipment::create([
       'order_id' => 10,
-      'package_type' => 'custom_box',
     ]);
-    $this->setExpectedException(EntityStorageException::class, 'Required shipment field "shipping_method" is empty.');
+    $this->setExpectedException(EntityStorageException::class, 'Required shipment field "items" is empty.');
     $shipment->save();
   }
 

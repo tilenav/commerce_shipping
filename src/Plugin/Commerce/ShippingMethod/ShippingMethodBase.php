@@ -98,7 +98,7 @@ abstract class ShippingMethodBase extends PluginBase implements ContainerFactory
    */
   public function defaultConfiguration() {
     return [
-      'default_package_type' => 'default_box',
+      'default_package_type' => 'custom_box',
       'services' => [],
     ];
   }

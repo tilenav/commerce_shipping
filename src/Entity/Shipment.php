@@ -430,9 +430,13 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ->setDescription(t('The shipping method'))
       ->setSetting('target_type', 'commerce_shipping_method')
       ->setDisplayOptions('form', [
-        'type' => 'options_select',
+        'type' => 'commerce_shipping_rate',
         'weight' => 0,
-        'settings' => [],
+      ])
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'commerce_shipping_method',
+        'weight' => 0,
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -442,8 +446,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ->setRequired(TRUE)
       ->setDescription(t('The shipping service.'))
       ->setDefaultValue('')
-      ->setSetting('max_length', 255)
-      ->setDisplayConfigurable('view', TRUE);
+      ->setSetting('max_length', 255);
 
     $fields['shipping_profile'] = BaseFieldDefinition::create('entity_reference_revisions')
       ->setLabel(t('Shipping information'))

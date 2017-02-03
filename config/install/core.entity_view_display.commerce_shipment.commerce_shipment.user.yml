@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.commerce_shipment.user
+  module:
+    - commerce_shipping
+id: commerce_shipment.commerce_shipment.user
+targetEntityType: commerce_shipment
+bundle: commerce_shipment
+mode: user
+content:
+  shipping_method:
+    type: commerce_shipping_method
+    weight: 0
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  adjustments: true
+  amount: true
+  items: true
+  package_type: true
+  shipping_profile: true
+  shipping_service: true
+  state: true
+  tracking_code: true
+  weight: true

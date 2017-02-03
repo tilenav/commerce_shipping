@@ -3,6 +3,7 @@
 namespace Drupal\commerce_shipping\Plugin\Commerce\ShippingMethod;
 
 use Drupal\commerce_shipping\Entity\ShipmentInterface;
+use Drupal\commerce_shipping\ShippingRate;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
@@ -45,5 +46,15 @@ interface ShippingMethodInterface extends ConfigurablePluginInterface, PluginFor
    *   The rates.
    */
   public function calculateRates(ShipmentInterface $shipment);
+
+  /**
+   * Selects the given shipping rate for the given shipment.
+   *
+   * @param \Drupal\commerce_shipping\Entity\ShipmentInterface $shipment
+   *   The shipment.
+   * @param \Drupal\commerce_shipping\ShippingRate $rate
+   *   The shipping rate.
+   */
+  public function selectRate(ShipmentInterface $shipment, ShippingRate $rate);
 
 }

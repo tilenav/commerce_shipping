@@ -1,0 +1,40 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - commerce_payment
+    - commerce_shipping
+id: shipping_test
+label: 'Shipping Test'
+plugin: multistep_default
+configuration:
+  display_checkout_progress: true
+  order_summary_view: commerce_checkout_order_summary
+  panes:
+    completion_message:
+      message: 'Your order number is %order_number. You can view your order on your account page when logged in.'
+      step: complete
+      weight: 4
+    contact_information:
+      double_entry: false
+      step: order_information
+      weight: 1
+    login:
+      allow_guest_checkout: true
+      allow_registration: false
+      step: login
+      weight: 0
+    review:
+      step: review
+      weight: 3
+    payment_information:
+      step: _disabled
+      weight: 5
+    payment_process:
+      capture: true
+      step: _disabled
+      weight: 6
+    shipping_information:
+      require_shipping_profile: true
+      step: order_information
+      weight: 2

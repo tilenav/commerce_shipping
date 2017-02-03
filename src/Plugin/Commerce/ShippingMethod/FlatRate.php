@@ -44,6 +44,7 @@ class FlatRate extends ShippingMethodBase {
     return [
       'rate_label' => NULL,
       'rate_amount' => NULL,
+      'services' => ['default'],
     ] + parent::defaultConfiguration();
   }
 
@@ -99,7 +100,7 @@ class FlatRate extends ShippingMethodBase {
     $amount = $this->configuration['rate_amount'];
     $amount = new Price($amount['number'], $amount['currency_code']);
     $rates = [];
-    $rates[] = new ShippingRate($rate_id, $this->services['flat_rate'], $amount);
+    $rates[] = new ShippingRate($rate_id, $this->services['default'], $amount);
 
     return $rates;
   }

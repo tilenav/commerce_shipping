@@ -20,7 +20,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *     plural = "@count shipping methods",
  *   ),
  *   handlers = {
- *     "storage" = "Drupal\commerce\CommerceContentEntityStorage",
+ *     "storage" = "Drupal\commerce_shipping\ShippingMethodStorage",
  *     "access" = "Drupal\commerce\EntityAccessControlHandler",
  *     "permission_provider" = "Drupal\commerce\EntityPermissionProvider",
  *     "list_builder" = "Drupal\commerce_shipping\ShippingMethodListBuilder",

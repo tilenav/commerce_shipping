@@ -2,7 +2,9 @@
 
 namespace Drupal\commerce_shipping\Plugin\Commerce\ShippingMethod;
 
+use Drupal\commerce_shipping\Entity\ShipmentInterface;
 use Drupal\commerce_shipping\PackageTypeManagerInterface;
+use Drupal\commerce_shipping\ShippingRate;
 use Drupal\commerce_shipping\ShippingService;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
@@ -172,6 +174,16 @@ abstract class ShippingMethodBase extends PluginBase implements ContainerFactory
         $this->configuration['services'] = array_keys($values['services']);
       }
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function selectRate(ShipmentInterface $shipment, ShippingRate $rate) {
+    // Plugins can override this method to store additional information
+    // on the shipment when the rate is selected (for example, the rate ID).
+    $shipment->setShippingService($rate->getService()->getId());
+    $shipment->setAmount($rate->getAmount());
   }
 
 }

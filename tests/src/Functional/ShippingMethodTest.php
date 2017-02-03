@@ -3,7 +3,6 @@
 namespace Drupal\Tests\commerce_shipping\Functional;
 
 use Drupal\commerce_shipping\Entity\ShippingMethod;
-use Drupal\commerce_store\StoreCreationTrait;
 use Drupal\Tests\commerce\Functional\CommerceBrowserTestBase;
 
 /**
@@ -12,8 +11,6 @@ use Drupal\Tests\commerce\Functional\CommerceBrowserTestBase;
  * @group commerce_shipping
  */
 class ShippingMethodTest extends CommerceBrowserTestBase {
-
-  use StoreCreationTrait;
 
   /**
    * {@inheritdoc}
@@ -35,8 +32,6 @@ class ShippingMethodTest extends CommerceBrowserTestBase {
    * Tests creating a shipping method.
    */
   public function testShippingMethodCreation() {
-    $this->createStore(NULL, NULL, 'default', TRUE);
-
     $this->drupalGet('admin/commerce/config/shipping-methods');
     $this->getSession()->getPage()->clickLink('Add shipping method');
     $this->assertSession()->addressEquals('admin/commerce/config/shipping-methods/add');
@@ -65,8 +60,6 @@ class ShippingMethodTest extends CommerceBrowserTestBase {
    * Tests editing a shipping method.
    */
   public function testShippingMethodEditing() {
-    $this->createStore(NULL, NULL, 'default', TRUE);
-
     $shipping_method = $this->createEntity('commerce_shipping_method', [
       'name' => $this->randomMachineName(8),
       'status' => TRUE,

@@ -1,3 +1,11 @@
+commerce_order.commerce_order_type.*.third_party.commerce_shipping:
+  type: mapping
+  label: 'Shipping settings'
+  mapping:
+    shipment_type:
+      type: string
+      label: 'Shipment type'
+
 commerce_checkout.commerce_checkout_pane.shipping_information:
   type: commerce_checkout_pane_configuration
   mapping:
@@ -29,6 +37,10 @@ commerce_shipping_method_configuration:
       label: 'Services'
       sequence:
         type: string
+
+commerce_shipping.commerce_shipment_type.*:
+  type: commerce_config_entity_bundle
+  label: 'Shipment type'
 
 commerce_shipping.commerce_package_type.*:
   type: config_entity

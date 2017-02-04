@@ -122,6 +122,7 @@ class ShipmentTest extends CommerceKernelTestBase {
     $profile = $this->reloadEntity($profile);
 
     $shipment = Shipment::create([
+      'type' => 'default',
       'state' => 'ready',
       'order_id' => $order->id(),
     ]);
@@ -229,6 +230,7 @@ class ShipmentTest extends CommerceKernelTestBase {
     $profile = $this->reloadEntity($profile);
 
     $proposed_shipment = new ProposedShipment([
+      'type' => 'default',
       'order_id' => 10,
       'shipping_profile_id' => $profile->id(),
       'items' => [
@@ -246,7 +248,9 @@ class ShipmentTest extends CommerceKernelTestBase {
         'state' => 'ready',
       ],
     ]);
-    $shipment = Shipment::create();
+    $shipment = Shipment::create([
+      'type' => 'default',
+    ]);
     $shipment->populateFromProposedShipment($proposed_shipment);
 
     $this->assertEquals($proposed_shipment->getOrderId(), $shipment->getOrderId());
@@ -274,6 +278,7 @@ class ShipmentTest extends CommerceKernelTestBase {
     // Saving a shipment with a shipping method but no package type should
     // populate the package type.
     $shipment = Shipment::create([
+      'type' => 'default',
       'order_id' => 10,
       'shipping_method' => $shipping_method,
       'items' => [
@@ -295,6 +300,7 @@ class ShipmentTest extends CommerceKernelTestBase {
    */
   public function testEmptyValidation() {
     $shipment = Shipment::create([
+      'type' => 'default',
       'order_id' => 10,
     ]);
     $this->setExpectedException(EntityStorageException::class, 'Required shipment field "items" is empty.');

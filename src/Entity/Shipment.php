@@ -28,6 +28,7 @@ use Drupal\profile\Entity\ProfileInterface;
  *     singular = "@count shipment",
  *     plural = "@count shipments",
  *   ),
+ *   bundle_label = @Translation("Shipment type"),
  *   handlers = {
  *     "storage" = "Drupal\commerce\CommerceContentEntityStorage",
  *     "access" = "Drupal\Core\Entity\EntityAccessControlHandler",
@@ -38,9 +39,11 @@ use Drupal\profile\Entity\ProfileInterface;
  *   fieldable = TRUE,
  *   entity_keys = {
  *     "id" = "shipment_id",
+ *     "bundle" = "type",
  *     "uuid" = "uuid",
  *   },
- *   field_ui_base_route = "entity.commerce_shipment.settings"
+ *   bundle_entity_type = "commerce_shipment_type",
+ *   field_ui_base_route = "entity.commerce_shipment_type.edit_form",
  * )
  */
 class Shipment extends ContentEntityBase implements ShipmentInterface {
@@ -51,6 +54,10 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
    * {@inheritdoc}
    */
   public function populateFromProposedShipment(ProposedShipment $proposed_shipment) {
+    if ($proposed_shipment->getType() != $this->bundle()) {
+      throw new \InvalidArgumentException(sprintf('The proposed shipment type "%s" does not match the shipment type "%s".', $proposed_shipment->getType(), $this->bundle()));
+    }
+
     $this->set('order_id', $proposed_shipment->getOrderId());
     $this->set('items', $proposed_shipment->getItems());
     $this->set('package_type', $proposed_shipment->getPackageTypeId());

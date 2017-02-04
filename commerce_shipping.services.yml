@@ -6,6 +6,7 @@ services:
 
   commerce_shipping.default_packer:
     class: Drupal\commerce_shipping\Packer\DefaultPacker
+    arguments: ['@entity_type.manager']
     tags:
       - { name: commerce_shipping.packer, priority: -100 }
 

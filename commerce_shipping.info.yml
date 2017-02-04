@@ -11,5 +11,6 @@ dependencies:
   - physical
 config_devel:
   install:
-    - core.entity_view_display.commerce_shipment.commerce_shipment.user
+    - core.entity_view_display.commerce_shipment.default.user
     - core.entity_view_mode.commerce_shipment.user
+    - commerce_shipping.commerce_shipment.default

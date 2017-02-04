@@ -5,11 +5,14 @@ namespace Drupal\Tests\commerce_shipping\Unit;
 use Drupal\commerce\PurchasableEntityInterface;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_order\Entity\OrderItemInterface;
+use Drupal\commerce_order\Entity\OrderTypeInterface;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_shipping\Packer\PackerInterface;
 use Drupal\commerce_shipping\Packer\DefaultPacker;
 use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\physical\Plugin\Field\FieldType\MeasurementItem;
@@ -36,7 +39,14 @@ class DefaultPackerTest extends UnitTestCase {
   public function setUp() {
     parent::setUp();
 
-    $this->packer = new DefaultPacker();
+    $order_type = $this->prophesize(OrderTypeInterface::class);
+    $order_type->getThirdPartySetting('commerce_shipping', 'shipment_type')->willReturn('default');
+    $order_type_storage = $this->prophesize(EntityStorageInterface::class);
+    $order_type_storage->load('default')->willReturn($order_type->reveal());
+    $entity_type_manager = $this->prophesize(EntityTypeManagerInterface::class);
+    $entity_type_manager->getStorage('commerce_order_type')->willReturn($order_type_storage->reveal());
+
+    $this->packer = new DefaultPacker($entity_type_manager->reveal());
   }
 
   /**
@@ -72,6 +82,7 @@ class DefaultPackerTest extends UnitTestCase {
     $order_items[] = $second_order_item->reveal();
 
     $order = $this->prophesize(OrderInterface::class);
+    $order->bundle()->willReturn('default');
     $order->id()->willReturn(2);
     $order->getItems()->willReturn($order_items);
     $order = $order->reveal();
@@ -80,6 +91,7 @@ class DefaultPackerTest extends UnitTestCase {
     $shipping_profile = $shipping_profile->reveal();
 
     $expected_proposed_shipment = new ProposedShipment([
+      'type' => 'default',
       'order_id' => 2,
       'shipping_profile_id' => 3,
       'items' => [

@@ -13,6 +13,13 @@ namespace Drupal\commerce_shipping;
 class ProposedShipment {
 
   /**
+   * The shipment type.
+   *
+   * @var string
+   */
+  protected $type;
+
+  /**
    * The order ID.
    *
    * @var int
@@ -54,7 +61,7 @@ class ProposedShipment {
    *   The definition.
    */
   public function __construct(array $definition) {
-    foreach (['order_id', 'items'] as $required_property) {
+    foreach (['type', 'order_id', 'items'] as $required_property) {
       if (empty($definition[$required_property])) {
         throw new \InvalidArgumentException(sprintf('Missing required property "%s".', $required_property));
       }
@@ -65,6 +72,7 @@ class ProposedShipment {
       }
     }
 
+    $this->type = $definition['type'];
     $this->orderId = $definition['order_id'];
     $this->items = $definition['items'];
     if (!empty($definition['shipping_profile_id'])) {
@@ -76,6 +84,16 @@ class ProposedShipment {
     if (!empty($definition['custom_fields'])) {
       $this->customFields = $definition['custom_fields'];
     }
+  }
+
+  /**
+   * Gets the shipment type.
+   *
+   * @return string
+   *   The shipment type.
+   */
+  public function getType() {
+    return $this->type;
   }
 
   /**

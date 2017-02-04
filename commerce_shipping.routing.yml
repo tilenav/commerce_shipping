@@ -1,10 +1,10 @@
-entity.commerce_shipment.settings:
-  path: '/admin/commerce/config/shipment'
+entity.commerce_shipment_type.collection:
+  path: '/admin/commerce/config/shipment-types'
   defaults:
-    _controller: '\Drupal\commerce_shipping\Controller\ShipmentController::settingsPage'
-    _title: 'Shipment settings'
+    _entity_list: 'commerce_shipment_type'
+    _title: 'Shipment types'
   requirements:
-    _permission: 'administer commerce_shipment'
+    _permission: 'administer commerce_shipment_type'
 
 entity.commerce_shipping_method.collection:
   path: '/admin/commerce/config/shipping-methods'

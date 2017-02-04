@@ -5,6 +5,7 @@ namespace Drupal\commerce_shipping\Packer;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\physical\Weight;
 use Drupal\physical\WeightUnit;
 use Drupal\profile\Entity\ProfileInterface;
@@ -13,6 +14,23 @@ use Drupal\profile\Entity\ProfileInterface;
  * Creates a single shipment per order.
  */
 class DefaultPacker implements PackerInterface {
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Constructs a new DefaultPacker object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
+  }
 
   /**
    * {@inheritdoc}
@@ -53,6 +71,7 @@ class DefaultPacker implements PackerInterface {
     $proposed_shipments = [];
     if (!empty($items)) {
       $proposed_shipments[] = new ProposedShipment([
+        'type' => $this->getShipmentType($order),
         'order_id' => $order->id(),
         'items' => $items,
         'shipping_profile_id' => $shipping_profile->id(),
@@ -60,6 +79,23 @@ class DefaultPacker implements PackerInterface {
     }
 
     return $proposed_shipments;
+  }
+
+  /**
+   * Gets the shipment type for the current order.
+   *
+   * @param \Drupal\commerce_order\Entity\OrderInterface $order
+   *   The order.
+   *
+   * @return string
+   *   The shipment type.
+   */
+  protected function getShipmentType(OrderInterface $order) {
+    $order_type_storage = $this->entityTypeManager->getStorage('commerce_order_type');
+    /** @var \Drupal\commerce_order\Entity\OrderTypeInterface $order_type */
+    $order_type = $order_type_storage->load($order->bundle());
+
+    return $order_type->getThirdPartySetting('commerce_shipping', 'shipment_type');
   }
 
 }

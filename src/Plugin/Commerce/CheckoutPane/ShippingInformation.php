@@ -228,7 +228,14 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
       $proposed_shipments = $this->packerManager->pack($this->order, $shipping_profile);
       foreach ($proposed_shipments as $index => $proposed_shipment) {
         /** @var \Drupal\commerce_shipping\Entity\ShipmentInterface $shipment */
-        $shipment = isset($shipments[$index]) ? $shipments[$index] : $shipment_storage->create();
+        if (isset($shipments[$index])) {
+          $shipment = $shipments[$index];
+        }
+        else {
+          $shipment =  $shipment_storage->create([
+            'type' => $proposed_shipment->getType(),
+          ]);
+        }
         $shipment->populateFromProposedShipment($proposed_shipment);
         $shipments[$index] = $shipment;
       }

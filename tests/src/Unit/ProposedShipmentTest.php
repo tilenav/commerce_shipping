@@ -28,6 +28,7 @@ class ProposedShipmentTest extends UnitTestCase {
     parent::setUp();
 
     $this->proposedShipment = new ProposedShipment([
+      'type' => 'default',
       'order_id' => 10,
       'items' => [
         new ShipmentItem([
@@ -44,6 +45,13 @@ class ProposedShipmentTest extends UnitTestCase {
         'field_test' => 'value',
       ],
     ]);
+  }
+
+  /**
+   * @covers ::getType
+   */
+  public function testGetType() {
+    $this->assertEquals('default', $this->proposedShipment->getType());
   }
 
   /**
@@ -96,6 +104,7 @@ class ProposedShipmentTest extends UnitTestCase {
   public function testMissingProperties() {
     $this->setExpectedException(\InvalidArgumentException::class, 'Missing required property "items".');
     $proposed_shipment = new ProposedShipment([
+      'type' => 'default',
       'order_id' => 10,
       'shipping_profile_id' => 11,
       'package_type_id' => 'default',
@@ -108,6 +117,7 @@ class ProposedShipmentTest extends UnitTestCase {
   public function testInvalidItems() {
     $this->setExpectedException(\InvalidArgumentException::class, 'Each shipment item under the "items" property must be an instance of ShipmentItem.');
     $proposed_shipment = new ProposedShipment([
+      'type' => 'default',
       'order_id' => 10,
       'shipping_profile_id' => 11,
       'items' => ['invalid'],

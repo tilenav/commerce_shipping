@@ -64,15 +64,17 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
 
     $order_type = OrderType::load('default');
     $order_type->setThirdPartySetting('commerce_checkout', 'checkout_flow', 'shipping_test');
-    $order_type->setTraits(['order_shippable']);
+    $order_type->setThirdPartySetting('commerce_shipping', 'shipment_type', 'default');
     $order_type->save();
 
-    // Install the traits.
+    // Create the order field.
+    $field_definition = commerce_shipping_build_shipment_field_definition($order_type->id());
+    \Drupal::service('commerce.configurable_field_manager')->createField($field_definition);
+
+    // Install the variation trait.
     $trait_manager = \Drupal::service('plugin.manager.commerce_entity_trait');
     $trait = $trait_manager->createInstance('purchasable_entity_shippable');
     $trait_manager->installTrait($trait, 'commerce_product_variation', 'default');
-    $trait = $trait_manager->createInstance('order_shippable');
-    $trait_manager->installTrait($trait, 'commerce_order', 'default');
 
     // Create two products.
     $variation = $this->createEntity('commerce_product_variation', [

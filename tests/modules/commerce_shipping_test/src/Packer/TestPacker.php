@@ -45,6 +45,7 @@ class TestPacker implements PackerInterface {
       /** @var \Drupal\physical\Weight $weight */
       $weight = $purchased_entity->get('weight')->first()->toMeasurement();
       $proposed_shipments[] = new ProposedShipment([
+        'type' => 'default',
         'order_id' => $order->id(),
         'items' => [
           new ShipmentItem([

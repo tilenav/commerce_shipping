@@ -1,3 +1,9 @@
+entity.commerce_shipment_type.add_form:
+  route_name: entity.commerce_shipment_type.add_form
+  title: 'Add shipment type'
+  appears_on:
+    - entity.commerce_shipment_type.collection
+
 entity.commerce_shipping_method.add_form:
   route_name: entity.commerce_shipping_method.add_form
   title: 'Add shipping method'

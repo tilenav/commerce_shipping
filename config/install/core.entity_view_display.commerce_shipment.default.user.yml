@@ -7,7 +7,7 @@ dependencies:
     - commerce_shipping
 id: commerce_shipment.commerce_shipment.user
 targetEntityType: commerce_shipment
-bundle: commerce_shipment
+bundle: default
 mode: user
 content:
   shipping_method:

@@ -53,7 +53,7 @@ class ShipmentTypeForm extends CommerceBundleEntityFormBase {
     drupal_set_message($this->t('Saved the %label shipment type.', [
       '%label' => $this->entity->label(),
     ]));
-    $form_state->setRedirect('entity.commerce_shipping_type.collection');
+    $form_state->setRedirect('entity.commerce_shipment_type.collection');
   }
 
 }

@@ -47,7 +47,7 @@ class TestPacker implements PackerInterface {
       $proposed_shipments[] = new ProposedShipment([
         'type' => 'default',
         'order_id' => $order->id(),
-        'title' => t('Shipment #@index', ['@index' => $index]),
+        'title' => t('Shipment #@index', ['@index' => $index + 1]),
         'items' => [
           new ShipmentItem([
             'order_item_id' => $order_item->id(),

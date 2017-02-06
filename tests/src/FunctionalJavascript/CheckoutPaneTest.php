@@ -112,6 +112,7 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
     // Create two flat rate shipping methods.
     $first_shipping_method = $this->createEntity('commerce_shipping_method', [
       'name' => 'Overnight shipping',
+      'stores' => [$this->store->id()],
       'plugin' => [
         'target_plugin_id' => 'flat_rate',
         'target_plugin_configuration' => [
@@ -125,12 +126,29 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
     ]);
     $second_shipping_method = $this->createEntity('commerce_shipping_method', [
       'name' => 'Standard shipping',
+      'stores' => [$this->store->id()],
       // Ensure that Standard shipping shows before overnight shipping.
       'weight' => -10,
       'plugin' => [
         'target_plugin_id' => 'flat_rate',
         'target_plugin_configuration' => [
           'rate_label' => 'Standard shipping',
+          'rate_amount' => [
+            'number' => '9.99',
+            'currency_code' => 'USD',
+          ],
+        ],
+      ],
+    ]);
+    $second_store = $this->createStore();
+    // Should never be shown cause it doesn't belong to the order's store.
+    $third_shipping_method = $this->createEntity('commerce_shipping_method', [
+      'name' => 'Secret shipping',
+      'stores' => [$second_store->id()],
+      'plugin' => [
+        'target_plugin_id' => 'flat_rate',
+        'target_plugin_configuration' => [
+          'rate_label' => 'Secret shipping',
           'rate_amount' => [
             'number' => '9.99',
             'currency_code' => 'USD',
@@ -188,6 +206,7 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
       $this->assertSession()->pageTextContains($value);
     }
     $this->assertSession()->pageTextContains('Standard shipping');
+    $this->assertSession()->pageTextNotContains('Secret shipping');
 
     // Confirm the integrity of the shipment.
     $this->submitForm([], 'Pay and complete purchase');

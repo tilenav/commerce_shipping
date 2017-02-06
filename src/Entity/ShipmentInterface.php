@@ -132,6 +132,24 @@ interface ShipmentInterface extends ContentEntityInterface, EntityAdjustableInte
   public function setShippingProfile(ProfileInterface $profile);
 
   /**
+   * Gets the shipment title.
+   *
+   * @return string
+   *   The shipment title.
+   */
+  public function getTitle();
+
+  /**
+   * Sets the shipment title.
+   *
+   * @param string $title
+   *   The shipment title.
+   *
+   * @return $this
+   */
+  public function setTitle($title);
+
+  /**
    * Gets the shipment items.
    *
    * @return \Drupal\commerce_shipping\ShipmentItem[]

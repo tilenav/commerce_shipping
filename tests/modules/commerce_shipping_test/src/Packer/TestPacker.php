@@ -29,7 +29,7 @@ class TestPacker implements PackerInterface {
    */
   public function pack(OrderInterface $order, ProfileInterface $shipping_profile) {
     $proposed_shipments = [];
-    foreach ($order->getItems() as $order_item) {
+    foreach ($order->getItems() as $index => $order_item) {
       $purchased_entity = $order_item->getPurchasedEntity();
       // Ship only shippable purchasable entity types.
       if (!$purchased_entity || !$purchased_entity->hasField('weight')) {
@@ -47,10 +47,11 @@ class TestPacker implements PackerInterface {
       $proposed_shipments[] = new ProposedShipment([
         'type' => 'default',
         'order_id' => $order->id(),
+        'title' => t('Shipment #@index', ['@index' => $index]),
         'items' => [
           new ShipmentItem([
             'order_item_id' => $order_item->id(),
-            'label' => $order_item->getTitle(),
+            'title' => $order_item->getTitle(),
             'quantity' => $quantity,
             'weight' => $weight->multiply($quantity),
             'declared_value' => $order_item->getUnitPrice()->multiply($quantity),

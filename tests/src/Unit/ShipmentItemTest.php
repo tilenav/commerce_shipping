@@ -28,7 +28,7 @@ class ShipmentItemTest extends UnitTestCase {
 
     $this->shipmentItem = new ShipmentItem([
       'order_item_id' => 10,
-      'label' => 'T-shirt (red, small)',
+      'title' => 'T-shirt (red, small)',
       'quantity' => 1,
       'weight' => new Weight('10', 'kg'),
       'declared_value' => new Price('8', 'USD'),
@@ -44,10 +44,10 @@ class ShipmentItemTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::getLabel
+   * @covers ::getTitle
    */
-  public function testGetLabel() {
-    $this->assertEquals('T-shirt (red, small)', $this->shipmentItem->getLabel());
+  public function testGetTitle() {
+    $this->assertEquals('T-shirt (red, small)', $this->shipmentItem->getTitle());
   }
 
   /**
@@ -85,7 +85,7 @@ class ShipmentItemTest extends UnitTestCase {
     $this->setExpectedException(\InvalidArgumentException::class, 'Missing required property "declared_value".');
     $proposed_shipment = new ShipmentItem([
       'order_item_id' => 10,
-      'label' => 'T-shirt (red, small)',
+      'title' => 'T-shirt (red, small)',
       'quantity' => 1,
       'weight' => new Weight('10', 'kg'),
     ]);

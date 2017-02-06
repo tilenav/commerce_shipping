@@ -167,8 +167,7 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
       $summary[$index] = [
         '#type' => $single_shipment ? 'container' : 'details',
         '#open' => TRUE,
-        // @todo Replace with $shipment->label() once it becomes extensible.
-        '#title' => $this->t('Shipment #@index', ['@index' => $index + 1]),
+        '#title' => $shipment->getTitle(),
       ];
       $summary[$index]['shipment'] = $shipment_view_builder->view($shipment, 'user');
       // The shipping profile is already shown above, the state is internal.
@@ -232,7 +231,7 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
           $shipment = $shipments[$index];
         }
         else {
-          $shipment =  $shipment_storage->create([
+          $shipment = $shipment_storage->create([
             'type' => $proposed_shipment->getType(),
           ]);
         }
@@ -250,8 +249,7 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
         '#parents' => array_merge($pane_form['#parents'], ['shipments', $index]),
         '#array_parents' => array_merge($pane_form['#parents'], ['shipments', $index]),
         '#type' => $single_shipment ? 'container' : 'fieldset',
-        // @todo Replace with $shipment->label() once it becomes extensible.
-        '#title' => $this->t('Shipment #@index', ['@index' => $index + 1]),
+        '#title' => $shipment->getTitle(),
       ];
       $form_display = EntityFormDisplay::collectRenderDisplay($shipment, 'default');
       $form_display->removeComponent('shipping_profile');

@@ -27,6 +27,13 @@ class ProposedShipment {
   protected $orderId;
 
   /**
+   * The shipment title.
+   *
+   * @var string
+   */
+  protected $title;
+
+  /**
    * The shipment items.
    *
    * @var \Drupal\commerce_shipping\ShipmentItem[]
@@ -61,7 +68,7 @@ class ProposedShipment {
    *   The definition.
    */
   public function __construct(array $definition) {
-    foreach (['type', 'order_id', 'items'] as $required_property) {
+    foreach (['type', 'order_id', 'title', 'items'] as $required_property) {
       if (empty($definition[$required_property])) {
         throw new \InvalidArgumentException(sprintf('Missing required property "%s".', $required_property));
       }
@@ -74,6 +81,7 @@ class ProposedShipment {
 
     $this->type = $definition['type'];
     $this->orderId = $definition['order_id'];
+    $this->title = $definition['title'];
     $this->items = $definition['items'];
     if (!empty($definition['shipping_profile_id'])) {
       $this->shippingProfileId = $definition['shipping_profile_id'];
@@ -104,6 +112,16 @@ class ProposedShipment {
    */
   public function getOrderId() {
     return $this->orderId;
+  }
+
+  /**
+   * Gets the shipment title.
+   *
+   * @return string
+   *   The shipment title.
+   */
+  public function getTitle() {
+    return $this->title;
   }
 
   /**

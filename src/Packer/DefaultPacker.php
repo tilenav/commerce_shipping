@@ -61,7 +61,7 @@ class DefaultPacker implements PackerInterface {
       $weight = $purchased_entity->get('weight')->first()->toMeasurement();
       $items[] = new ShipmentItem([
         'order_item_id' => $order_item->id(),
-        'label' => $order_item->getTitle(),
+        'title' => $order_item->getTitle(),
         'quantity' => $quantity,
         'weight' => $weight->multiply($quantity),
         'declared_value' => $order_item->getUnitPrice()->multiply($quantity),
@@ -73,6 +73,7 @@ class DefaultPacker implements PackerInterface {
       $proposed_shipments[] = new ProposedShipment([
         'type' => $this->getShipmentType($order),
         'order_id' => $order->id(),
+        'title' => t('Shipment #1'),
         'items' => $items,
         'shipping_profile_id' => $shipping_profile->id(),
       ]);

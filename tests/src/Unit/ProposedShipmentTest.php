@@ -30,10 +30,11 @@ class ProposedShipmentTest extends UnitTestCase {
     $this->proposedShipment = new ProposedShipment([
       'type' => 'default',
       'order_id' => 10,
+      'title' => 'Shipment from Narnia',
       'items' => [
         new ShipmentItem([
           'order_item_id' => 10,
-          'label' => 'T-shirt (red, small)',
+          'title' => 'T-shirt (red, small)',
           'quantity' => 1,
           'weight' => new Weight('10', 'kg'),
           'declared_value' => new Price('10', 'USD'),
@@ -62,13 +63,20 @@ class ProposedShipmentTest extends UnitTestCase {
   }
 
   /**
+   * @covers ::getTitle
+   */
+  public function testGetTitle() {
+    $this->assertEquals('Shipment from Narnia', $this->proposedShipment->getTitle());
+  }
+
+  /**
    * @covers ::getItems
    */
   public function testGetItems() {
     $expected_items = [];
     $expected_items[] = new ShipmentItem([
       'order_item_id' => 10,
-      'label' => 'T-shirt (red, small)',
+      'title' => 'T-shirt (red, small)',
       'quantity' => 1,
       'weight' => new Weight('10', 'kg'),
       'declared_value' => new Price('10', 'USD'),
@@ -106,6 +114,7 @@ class ProposedShipmentTest extends UnitTestCase {
     $proposed_shipment = new ProposedShipment([
       'type' => 'default',
       'order_id' => 10,
+      'title' => 'Test shipment',
       'shipping_profile_id' => 11,
       'package_type_id' => 'default',
     ]);
@@ -119,8 +128,9 @@ class ProposedShipmentTest extends UnitTestCase {
     $proposed_shipment = new ProposedShipment([
       'type' => 'default',
       'order_id' => 10,
-      'shipping_profile_id' => 11,
+      'title' => 'Test shipment',
       'items' => ['invalid'],
+      'shipping_profile_id' => 11,
       'package_type_id' => 'default',
     ]);
   }

@@ -68,6 +68,8 @@ class ShipmentTest extends CommerceKernelTestBase {
    * @covers ::setShippingService
    * @covers ::getShippingProfile
    * @covers ::setShippingProfile
+   * @covers ::getTitle
+   * @covers ::setTitle
    * @covers ::getItems
    * @covers ::setItems
    * @covers ::hasItems
@@ -146,17 +148,20 @@ class ShipmentTest extends CommerceKernelTestBase {
     $shipment->setShippingProfile($profile);
     $this->assertEquals($profile, $shipment->getShippingProfile());
 
+    $shipment->setTitle('Shipment #1');
+    $this->assertEquals('Shipment #1', $shipment->getTitle());
+
     $items = [];
     $items[] = new ShipmentItem([
       'order_item_id' => 10,
-      'label' => 'T-shirt (red, large)',
+      'title' => 'T-shirt (red, large)',
       'quantity' => 2,
       'weight' => new Weight('40', 'kg'),
       'declared_value' => new Price('30', 'USD'),
     ]);
     $items[] = new ShipmentItem([
       'order_item_id' => 10,
-      'label' => 'T-shirt (blue, large)',
+      'title' => 'T-shirt (blue, large)',
       'quantity' => 2,
       'weight' => new Weight('30', 'kg'),
       'declared_value' => new Price('30', 'USD'),
@@ -232,16 +237,17 @@ class ShipmentTest extends CommerceKernelTestBase {
     $proposed_shipment = new ProposedShipment([
       'type' => 'default',
       'order_id' => 10,
-      'shipping_profile_id' => $profile->id(),
+      'title' => 'Test title',
       'items' => [
         new ShipmentItem([
           'order_item_id' => 10,
-          'label' => 'T-shirt (red, large)',
+          'title' => 'T-shirt (red, large)',
           'quantity' => 1,
           'weight' => new Weight('10', 'kg'),
           'declared_value' => new Price('15', 'USD'),
         ]),
       ],
+      'shipping_profile_id' => $profile->id(),
       'package_type_id' => 'custom_box',
       // State is not a custom field, but it simplifies this test.
       'custom_fields' => [
@@ -255,6 +261,7 @@ class ShipmentTest extends CommerceKernelTestBase {
 
     $this->assertEquals($proposed_shipment->getOrderId(), $shipment->getOrderId());
     $this->assertEquals($profile, $shipment->getShippingProfile());
+    $this->assertEquals($proposed_shipment->getTitle(), $shipment->getTitle());
     $this->assertEquals($proposed_shipment->getItems(), $shipment->getItems());
     $this->assertEquals($proposed_shipment->getPackageTypeId(), $shipment->getPackageType()->getId());
     $this->assertEquals('ready', $shipment->getState()->value);
@@ -284,7 +291,7 @@ class ShipmentTest extends CommerceKernelTestBase {
       'items' => [
         new ShipmentItem([
           'order_item_id' => 10,
-          'label' => 'T-shirt (red, large)',
+          'title' => 'T-shirt (red, large)',
           'quantity' => 1,
           'weight' => new Weight('10', 'kg'),
           'declared_value' => new Price('15', 'USD'),

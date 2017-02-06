@@ -15,11 +15,11 @@ final class ShipmentItem {
   protected $orderItemId;
 
   /**
-   * The label.
+   * The title.
    *
    * @var string
    */
-  protected $label;
+  protected $title;
 
   /**
    * The quantity.
@@ -56,14 +56,14 @@ final class ShipmentItem {
    *   The definition.
    */
   public function __construct(array $definition) {
-    foreach (['order_item_id', 'label', 'quantity', 'weight', 'declared_value'] as $required_property) {
+    foreach (['order_item_id', 'title', 'quantity', 'weight', 'declared_value'] as $required_property) {
       if (empty($definition[$required_property])) {
         throw new \InvalidArgumentException(sprintf('Missing required property "%s".', $required_property));
       }
     }
 
     $this->orderItemId = $definition['order_item_id'];
-    $this->label = $definition['label'];
+    $this->title = $definition['title'];
     $this->quantity = $definition['quantity'];
     $this->weight = $definition['weight'];
     $this->declaredValue = $definition['declared_value'];
@@ -86,15 +86,15 @@ final class ShipmentItem {
   }
 
   /**
-   * Gets the label.
+   * Gets the title.
    *
    * Can be used on customs forms as a description.
    *
    * @return string
-   *   The label.
+   *   The title.
    */
-  public function getLabel() {
-    return $this->label;
+  public function getTitle() {
+    return $this->title;
   }
 
   /**

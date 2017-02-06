@@ -292,7 +292,7 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
     $this->assertCount(1, $first_shipment->getItems());
     $items = $first_shipment->getItems();
     $item = reset($items);
-    $this->assertEquals('Conference hat', $item->getLabel());
+    $this->assertEquals('Conference hat', $item->getTitle());
     $this->assertEquals(1, $item->getQuantity());
     /** @var \Drupal\commerce_shipping\Entity|ShipmentInterface $second_shipment */
     $second_shipment = end($shipments);
@@ -305,7 +305,7 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
     $this->assertCount(1, $second_shipment->getItems());
     $items = $second_shipment->getItems();
     $item = reset($items);
-    $this->assertEquals('Conference bow tie', $item->getLabel());
+    $this->assertEquals('Conference bow tie', $item->getTitle());
     $this->assertEquals(1, $item->getQuantity());
   }
 

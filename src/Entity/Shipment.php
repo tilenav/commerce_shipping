@@ -40,6 +40,7 @@ use Drupal\profile\Entity\ProfileInterface;
  *   entity_keys = {
  *     "id" = "shipment_id",
  *     "bundle" = "type",
+ *     "label" = "title",
  *     "uuid" = "uuid",
  *   },
  *   bundle_entity_type = "commerce_shipment_type",
@@ -59,6 +60,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
     }
 
     $this->set('order_id', $proposed_shipment->getOrderId());
+    $this->set('title', $proposed_shipment->getTitle());
     $this->set('items', $proposed_shipment->getItems());
     $this->set('package_type', $proposed_shipment->getPackageTypeId());
     foreach ($proposed_shipment->getCustomFields() as $field_name => $value) {
@@ -168,6 +170,21 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
    */
   public function setShippingProfile(ProfileInterface $profile) {
     $this->set('shipping_profile', $profile);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTitle() {
+    return $this->get('title')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setTitle($title) {
+    $this->set('title', $title);
     return $this;
   }
 
@@ -468,6 +485,21 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
+
+    $fields['title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Title'))
+      ->setDescription(t('The shipment title.'))
+      ->setRequired(TRUE)
+      ->setSettings([
+        'default_value' => '',
+        'max_length' => 255,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -5,
+      ])
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', TRUE);
 
     $fields['items'] = BaseFieldDefinition::create('commerce_shipment_item')
       ->setLabel(t('Items'))

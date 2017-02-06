@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\commerce_shipping\Unit;
+namespace Drupal\Tests\commerce_shipping\Unit\Packer;
 
 use Drupal\commerce\PurchasableEntityInterface;
 use Drupal\commerce_order\Entity\OrderInterface;
@@ -93,19 +93,28 @@ class DefaultPackerTest extends UnitTestCase {
     $expected_proposed_shipment = new ProposedShipment([
       'type' => 'default',
       'order_id' => 2,
-      'shipping_profile_id' => 3,
+      'title' => 'Shipment #1',
       'items' => [
         new ShipmentItem([
           'order_item_id' => 2002,
-          'label' => 'T-shirt (red, small)',
+          'title' => 'T-shirt (red, small)',
           'quantity' => 3,
           'weight' => new Weight('30', 'kg'),
           'declared_value' => new Price('45', 'USD'),
         ]),
       ],
+      'shipping_profile_id' => 3,
     ]);
     $result = $this->packer->pack($order, $shipping_profile);
     $this->assertEquals([$expected_proposed_shipment], $result);
   }
 
+}
+
+namespace Drupal\commerce_shipping\Packer;
+
+if (!function_exists('t')) {
+  function t($string, array $args = []) {
+    return strtr($string, $args);
+  }
 }

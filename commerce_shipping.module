@@ -160,3 +160,31 @@ function commerce_shipping_build_shipment_field_definition($order_type_id) {
 
   return $field_definition;
 }
+
+/**
+ * Implements hook_preprocess_commerce_order().
+ */
+function commerce_shipping_preprocess_commerce_order(&$variables) {
+  /** @var Drupal\commerce_order\Entity\OrderInterface $order */
+  $order = $variables['elements']['#commerce_order'];
+  $summary = \Drupal::service('commerce_shipping.order_shipment_summary')->build($order);
+  if (!empty($summary)) {
+    $variables['order']['shipping_information'] = [
+      '#markup' => render($summary),
+    ];
+  }
+}
+
+/**
+ * Implements hook_preprocess_commerce_order_receipt().
+ */
+function commerce_shipping_preprocess_commerce_order_receipt(&$variables) {
+  /** @var Drupal\commerce_order\Entity\OrderInterface $order */
+  $order = $variables['elements']['#commerce_order'];
+  $summary = \Drupal::service('commerce_shipping.order_shipment_summary')->build($order);
+  if (!empty($summary)) {
+    $variables['shipping_information'] = [
+      '#markup' => render($summary),
+    ];
+  }
+}

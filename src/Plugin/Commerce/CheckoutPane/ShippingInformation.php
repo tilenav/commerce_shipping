@@ -4,6 +4,7 @@ namespace Drupal\commerce_shipping\Plugin\Commerce\CheckoutPane;
 
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutPane\CheckoutPaneBase;
 use Drupal\commerce_checkout\Plugin\Commerce\CheckoutFlow\CheckoutFlowInterface;
+use Drupal\commerce_shipping\OrderShipmentSummaryInterface;
 use Drupal\commerce_shipping\PackerManagerInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\NestedArray;
@@ -45,6 +46,13 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
   protected $packerManager;
 
   /**
+   * The order shipment summary.
+   *
+   * @var \Drupal\commerce_shipping\OrderShipmentSummaryInterface
+   */
+  protected $orderShipmentSummary;
+
+  /**
    * The renderer.
    *
    * @var \Drupal\Core\Render\RendererInterface
@@ -66,14 +74,17 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
    *   The entity type manager.
    * @param \Drupal\commerce_shipping\PackerManagerInterface $packer_manager
    *   The packer manager.
+   * @param \Drupal\commerce_shipping\OrderShipmentSummaryInterface $order_shipment_summary
+   *   The order shipment summary.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, CheckoutFlowInterface $checkout_flow, EntityTypeManagerInterface $entity_type_manager, PackerManagerInterface $packer_manager, RendererInterface $renderer) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, CheckoutFlowInterface $checkout_flow, EntityTypeManagerInterface $entity_type_manager, PackerManagerInterface $packer_manager, OrderShipmentSummaryInterface $order_shipment_summary, RendererInterface $renderer) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $checkout_flow);
 
     $this->entityTypeManager = $entity_type_manager;
     $this->packerManager = $packer_manager;
+    $this->orderShipmentSummary = $order_shipment_summary;
     $this->renderer = $renderer;
   }
 
@@ -88,6 +99,7 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
       $checkout_flow,
       $container->get('entity_type.manager'),
       $container->get('commerce_shipping.packer_manager'),
+      $container->get('commerce_shipping.order_shipment_summary'),
       $container->get('renderer')
     );
   }
@@ -156,24 +168,7 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
     if (!$this->isVisible()) {
       return '';
     }
-    $shipping_profile = $this->getShippingProfile();
-    $shipments = $this->order->shipments->referencedEntities();
-    $single_shipment = count($shipments) === 1;
-    $profile_view_builder = $this->entityTypeManager->getViewBuilder('profile');
-    $shipment_view_builder = $this->entityTypeManager->getViewBuilder('commerce_shipment');
-    $summary = [];
-    $summary['shipping_profile'] = $profile_view_builder->view($shipping_profile, 'default');
-    foreach ($shipments as $index => $shipment) {
-      $summary[$index] = [
-        '#type' => $single_shipment ? 'container' : 'details',
-        '#open' => TRUE,
-        '#title' => $shipment->getTitle(),
-      ];
-      $summary[$index]['shipment'] = $shipment_view_builder->view($shipment, 'user');
-      // The shipping profile is already shown above, the state is internal.
-      $summary[$index]['shipment']['shipping_profile']['#access'] = FALSE;
-      $summary[$index]['shipment']['state']['#access'] = FALSE;
-    }
+    $summary = $this->orderShipmentSummary->build($this->order);
     $summary = $this->renderer->render($summary);
 
     return $summary;
@@ -253,6 +248,7 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
       ];
       $form_display = EntityFormDisplay::collectRenderDisplay($shipment, 'default');
       $form_display->removeComponent('shipping_profile');
+      $form_display->removeComponent('title');
       $form_display->buildForm($shipment, $pane_form['shipments'][$index], $form_state);
       $pane_form['shipments'][$index]['#shipment'] = $shipment;
     }
@@ -284,6 +280,7 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
       $shipment = clone $pane_form['shipments'][$index]['#shipment'];
       $form_display = EntityFormDisplay::collectRenderDisplay($shipment, 'default');
       $form_display->removeComponent('shipping_profile');
+      $form_display->removeComponent('title');
       $form_display->extractFormValues($shipment, $pane_form['shipments'][$index], $form_state);
       $form_display->validateFormValues($shipment, $pane_form['shipments'][$index], $form_state);
     }
@@ -301,6 +298,7 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
       $shipment = clone $pane_form['shipments'][$index]['#shipment'];
       $form_display = EntityFormDisplay::collectRenderDisplay($shipment, 'default');
       $form_display->removeComponent('shipping_profile');
+      $form_display->removeComponent('title');
       $form_display->extractFormValues($shipment, $pane_form['shipments'][$index], $form_state);
       $shipment->setShippingProfile($pane_form['shipping_profile']['#profile']);
       $shipment->save();

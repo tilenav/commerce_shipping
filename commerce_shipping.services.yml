@@ -10,6 +10,11 @@ services:
     tags:
       - { name: commerce_shipping.packer, priority: -100 }
 
+  commerce_shipping.shipment_order_processor:
+    class: Drupal\commerce_shipping\ShipmentOrderProcessor
+    tags:
+      - { name: commerce_order.order_processor, priority: 200 }
+
   commerce_shipping.referenceable_plugin_types_subscriber:
     class: Drupal\commerce_shipping\EventSubscriber\ReferenceablePluginTypesSubscriber
     tags:

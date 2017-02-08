@@ -5,6 +5,7 @@ namespace Drupal\Tests\commerce_shipping\FunctionalJavascript;
 use Drupal\commerce_checkout\Entity\CheckoutFlow;
 use Drupal\commerce_order\Entity\Order;
 use Drupal\commerce_order\Entity\OrderType;
+use Drupal\commerce_price\Price;
 use Drupal\commerce_product\Entity\ProductVariationType;
 use Drupal\Tests\commerce\Functional\CommerceBrowserTestBase;
 use Drupal\Tests\commerce\FunctionalJavascript\JavascriptTestTrait;
@@ -222,6 +223,8 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
     $this->assertEquals('9.99', $shipment->getAmount()->getNumber());
     $this->assertCount(2, $shipment->getItems());
     $this->assertEquals('draft', $shipment->getState()->value);
+    // Confirm that the order total contains the shipment amount.
+    $this->assertEquals(new Price('26.97', 'USD'), $order->getTotalPrice());
   }
 
   /**
@@ -307,6 +310,8 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
     $item = reset($items);
     $this->assertEquals('Conference bow tie', $item->getTitle());
     $this->assertEquals(1, $item->getQuantity());
+    // Confirm that the order total contains the shipment amounts.
+    $this->assertEquals(new Price('36.96', 'USD'), $order->getTotalPrice());
   }
 
   /**
@@ -372,6 +377,8 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
     $this->assertEquals('9.99', $shipment->getAmount()->getNumber());
     $this->assertCount(2, $shipment->getItems());
     $this->assertEquals('draft', $shipment->getState()->value);
+    // Confirm that the order total contains the shipment amounts.
+    $this->assertEquals(new Price('26.97', 'USD'), $order->getTotalPrice());
   }
 
   /**

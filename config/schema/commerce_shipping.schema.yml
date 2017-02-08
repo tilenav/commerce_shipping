@@ -26,6 +26,16 @@ commerce_shipping.commerce_shipping_method.plugin.flat_rate:
       type: field.value.commerce_price
       label: 'Rate amount'
 
+commerce_shipping.commerce_shipping_method.plugin.flat_rate_per_item:
+  type: commerce_shipping_method_configuration
+  mapping:
+    rate_label:
+      type: label
+      label: 'Rate label'
+    rate_amount:
+      type: field.value.commerce_price
+      label: 'Rate amount'
+
 commerce_shipping_method_configuration:
   type: mapping
   mapping:

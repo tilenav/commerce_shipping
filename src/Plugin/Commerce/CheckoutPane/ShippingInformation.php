@@ -117,7 +117,7 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function buildConfigurationSummary() {
-    if (!empty($this->configuration['double_entry'])) {
+    if (!empty($this->configuration['require_shipping_profile'])) {
       $summary = $this->t('Hide shipping costs until an address is entered: Yes');
     }
     else {

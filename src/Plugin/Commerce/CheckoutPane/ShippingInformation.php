@@ -208,10 +208,6 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
         'callback' => [get_class($this), 'ajaxRefresh'],
         'wrapper' => $pane_form['#wrapper_id'],
       ],
-      // The calculation process only needs a valid shipping profile.
-      '#limit_validation_errors' => [
-        array_merge($pane_form['#parents'], ['shipping_profile']),
-      ],
     ];
 
     $shipments = $this->order->shipments->referencedEntities();

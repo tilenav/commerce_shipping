@@ -166,7 +166,7 @@ function commerce_shipping_build_shipment_field_definition($order_type_id) {
  */
 function commerce_shipping_preprocess_commerce_order(&$variables) {
   /** @var Drupal\commerce_order\Entity\OrderInterface $order */
-  $order = $variables['elements']['#commerce_order'];
+  $order = $variables['order_entity'];
   $summary = \Drupal::service('commerce_shipping.order_shipment_summary')->build($order);
   if (!empty($summary)) {
     $variables['order']['shipping_information'] = [
@@ -180,7 +180,7 @@ function commerce_shipping_preprocess_commerce_order(&$variables) {
  */
 function commerce_shipping_preprocess_commerce_order_receipt(&$variables) {
   /** @var Drupal\commerce_order\Entity\OrderInterface $order */
-  $order = $variables['elements']['#commerce_order'];
+  $order = $variables['order_entity'];
   $summary = \Drupal::service('commerce_shipping.order_shipment_summary')->build($order);
   if (!empty($summary)) {
     $variables['shipping_information'] = [

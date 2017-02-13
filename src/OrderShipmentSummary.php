@@ -37,11 +37,14 @@ class OrderShipmentSummary implements OrderShipmentSummaryInterface {
     if (!$order->hasField('shipments') || $order->get('shipments')->isEmpty()) {
       return [];
     }
-
     /** @var \Drupal\commerce_shipping\Entity\ShipmentInterface[] $shipments */
     $shipments = $order->get('shipments')->referencedEntities();
     $first_shipment = reset($shipments);
     $shipping_profile = $first_shipment->getShippingProfile();
+    if (!$shipping_profile) {
+      // Trying to generate a summary of incomplete shipments.
+      return [];
+    }
     $single_shipment = count($shipments) === 1;
     $profile_view_builder = $this->entityTypeManager->getViewBuilder('profile');
     $shipment_view_builder = $this->entityTypeManager->getViewBuilder('commerce_shipment');

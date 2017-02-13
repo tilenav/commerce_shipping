@@ -7,13 +7,11 @@ use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_order\Entity\OrderItemInterface;
 use Drupal\commerce_order\Entity\OrderTypeInterface;
 use Drupal\commerce_price\Price;
-use Drupal\commerce_shipping\Packer\PackerInterface;
 use Drupal\commerce_shipping\Packer\DefaultPacker;
 use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\physical\Plugin\Field\FieldType\MeasurementItem;
 use Drupal\physical\Weight;
@@ -114,7 +112,9 @@ class DefaultPackerTest extends UnitTestCase {
 namespace Drupal\commerce_shipping\Packer;
 
 if (!function_exists('t')) {
+
   function t($string, array $args = []) {
     return strtr($string, $args);
   }
+
 }

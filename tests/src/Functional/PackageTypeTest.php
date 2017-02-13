@@ -135,4 +135,5 @@ class PackageTypeTest extends CommerceBrowserTestBase {
     $package_type_exists = (bool) PackageType::load('for_deletion');
     $this->assertFalse($package_type_exists, 'The package type has been deleted from the database.');
   }
+
 }

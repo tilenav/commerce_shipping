@@ -24,11 +24,10 @@ services:
     tags:
       - { name: event_subscriber }
 
-    commerce_shipping.order_subscriber:
-      class: Drupal\commerce_shipping\EventSubscriber\OrderSubscriber
-      arguments: ['@entity_type.manager', '@entity.query']
-      tags:
-        - { name: event_subscriber }
+  commerce_shipping.order_subscriber:
+    class: Drupal\commerce_shipping\EventSubscriber\OrderSubscriber
+    tags:
+      - { name: event_subscriber }
 
   plugin.manager.commerce_shipping_method:
     class: Drupal\commerce_shipping\ShippingMethodManager

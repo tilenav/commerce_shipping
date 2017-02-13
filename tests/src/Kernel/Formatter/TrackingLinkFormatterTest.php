@@ -25,7 +25,6 @@ class TrackingLinkFormatterTest extends CommerceKernelTestBase {
     'physical',
     'profile',
     'state_machine',
-    'commerce_checkout',
     'commerce_order',
     'commerce_product',
     'commerce_shipping',

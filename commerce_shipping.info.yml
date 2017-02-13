@@ -13,5 +13,6 @@ config_devel:
   install:
     - core.entity_view_display.commerce_shipment.default.user
     - core.entity_view_mode.commerce_shipment.user
-    - commerce_checkout.commerce_checkout_flow.shipping
     - commerce_shipping.commerce_shipment.default
+  optional:
+    - commerce_checkout.commerce_checkout_flow.shipping

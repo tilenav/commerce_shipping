@@ -2,10 +2,11 @@ langcode: en
 status: true
 dependencies:
   config:
+    - commerce_shipping.commerce_shipment_type.default
     - core.entity_view_mode.commerce_shipment.user
   module:
     - commerce_shipping
-id: commerce_shipment.commerce_shipment.user
+id: commerce_shipment.default.user
 targetEntityType: commerce_shipment
 bundle: default
 mode: user
@@ -16,6 +17,12 @@ content:
     label: above
     settings: {  }
     third_party_settings: {  }
+  tracking_code:
+    type: commerce_tracking_link
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
 hidden:
   adjustments: true
   amount: true
@@ -24,5 +31,5 @@ hidden:
   shipping_profile: true
   shipping_service: true
   state: true
-  tracking_code: true
+  title: true
   weight: true

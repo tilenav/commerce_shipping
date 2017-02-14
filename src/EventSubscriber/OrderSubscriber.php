@@ -14,12 +14,15 @@ class OrderSubscriber implements EventSubscriberInterface {
   public static function getSubscribedEvents() {
     return [
       'commerce_order.cancel.post_transition' => ['onCancel'],
-      'commerce_order.place.post_transition' => ['onPlaceTransition'],
+      'commerce_order.place.post_transition' => ['onPlace'],
+      // @todo Remove onValidate/onFulfill once there is a Shipments admin UI.
+      'commerce_order.validate.post_transition' => ['onValidate'],
+      'commerce_order.fulfill.post_transition' => ['onFulfill'],
     ];
   }
 
   /**
-   * Cancel the order's shipments when the order is canceled.
+   * Cancels the order's shipments when the order is canceled.
    *
    * @param \Drupal\state_machine\Event\WorkflowTransitionEvent $event
    *   The transition event.
@@ -40,12 +43,15 @@ class OrderSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Finalize the order's shipments when the order is placed.
+   * Finalizes the order's shipments when the order is placed.
+   *
+   * Only used if the workflow does not have a validation step.
+   * Otherwise the same logic is handled by onValidate().
    *
    * @param \Drupal\state_machine\Event\WorkflowTransitionEvent $event
    *   The transition event.
    */
-  public function onPlaceTransition(WorkflowTransitionEvent $event) {
+  public function onPlace(WorkflowTransitionEvent $event) {
     /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
     $order = $event->getEntity();
     if ($event->getToState()->getId() != 'fulfillment' || !$this->orderHasShipments($order)) {
@@ -55,6 +61,48 @@ class OrderSubscriber implements EventSubscriberInterface {
     /** @var \Drupal\commerce_shipping\Entity\ShipmentInterface $shipment */
     foreach ($order->get('shipments')->referencedEntities() as $shipment) {
       $transition = $shipment->getState()->getWorkflow()->getTransition('finalize');
+      $shipment->getState()->applyTransition($transition);
+      $shipment->save();
+    }
+  }
+
+  /**
+   * Finalizes the order's shipments when the order is validated.
+   *
+   * @param \Drupal\state_machine\Event\WorkflowTransitionEvent $event
+   *   The transition event.
+   */
+  public function onValidate(WorkflowTransitionEvent $event) {
+    /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
+    $order = $event->getEntity();
+    if (!$this->orderHasShipments($order)) {
+      return;
+    }
+
+    /** @var \Drupal\commerce_shipping\Entity\ShipmentInterface $shipment */
+    foreach ($order->get('shipments')->referencedEntities() as $shipment) {
+      $transition = $shipment->getState()->getWorkflow()->getTransition('finalize');
+      $shipment->getState()->applyTransition($transition);
+      $shipment->save();
+    }
+  }
+
+  /**
+   * Ships the order's shipments when the order is fulfilled.
+   *
+   * @param \Drupal\state_machine\Event\WorkflowTransitionEvent $event
+   *   The transition event.
+   */
+  public function onFulfill(WorkflowTransitionEvent $event) {
+    /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
+    $order = $event->getEntity();
+    if (!$this->orderHasShipments($order)) {
+      return;
+    }
+
+    /** @var \Drupal\commerce_shipping\Entity\ShipmentInterface $shipment */
+    foreach ($order->get('shipments')->referencedEntities() as $shipment) {
+      $transition = $shipment->getState()->getWorkflow()->getTransition('ship');
       $shipment->getState()->applyTransition($transition);
       $shipment->save();
     }

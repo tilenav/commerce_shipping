@@ -128,6 +128,39 @@ class OrderWorkflowTest extends CommerceKernelTestBase {
 
     $shipment = $this->reloadEntity($this->shipment);
     $this->assertEquals('ready', $shipment->getState()->value, 'The shipment has been correctly finalized.');
+
+    $transitions = $this->order->getState()->getTransitions();
+    $this->order->getState()->applyTransition($transitions['fulfill']);
+    $this->order->save();
+    $shipment = $this->reloadEntity($this->shipment);
+    $this->assertEquals('shipped', $shipment->getState()->value);
+  }
+
+  /**
+   * Tests the order validation.
+   */
+  public function testOrderValidation() {
+    $order_type = OrderType::load($this->order->bundle());
+    $order_type->setWorkflowId('order_fulfillment_validation');
+    $order_type->save();
+
+    $transitions = $this->order->getState()->getTransitions();
+    $this->order->getState()->applyTransition($transitions['place']);
+    $this->order->save();
+    $shipment = $this->reloadEntity($this->shipment);
+    $this->assertEquals('draft', $shipment->getState()->value);
+
+    $transitions = $this->order->getState()->getTransitions();
+    $this->order->getState()->applyTransition($transitions['validate']);
+    $this->order->save();
+    $shipment = $this->reloadEntity($this->shipment);
+    $this->assertEquals('ready', $shipment->getState()->value);
+
+    $transitions = $this->order->getState()->getTransitions();
+    $this->order->getState()->applyTransition($transitions['fulfill']);
+    $this->order->save();
+    $shipment = $this->reloadEntity($this->shipment);
+    $this->assertEquals('shipped', $shipment->getState()->value);
   }
 
 }

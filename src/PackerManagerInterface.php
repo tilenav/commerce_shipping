@@ -43,4 +43,20 @@ interface PackerManagerInterface {
    */
   public function pack(OrderInterface $order, ProfileInterface $shipping_profile);
 
+  /**
+   * Packs the given order and populates the given shipments.
+   *
+   * @param \Drupal\commerce_order\Entity\OrderInterface $order
+   *   The order.
+   * @param \Drupal\profile\Entity\ProfileInterface $shipping_profile
+   *   The shipping profile.
+   * @param \Drupal\commerce_shipping\Entity\ShipmentInterface[] $shipments
+   *   The shipments to populate.
+   *
+   * @return array
+   *   An array with the populated shipments as the first element, and the
+   *   removed shipments as the second.
+   */
+  public function packToShipments(OrderInterface $order, ProfileInterface $shipping_profile, array $shipments);
+
 }

@@ -4,9 +4,17 @@ namespace Drupal\commerce_shipping;
 
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_shipping\Packer\PackerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\profile\Entity\ProfileInterface;
 
 class PackerManager implements PackerManagerInterface {
+
+  /**
+   * The entity type manager.
+   *
+   * @var EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
 
   /**
    * The packers.
@@ -14,6 +22,16 @@ class PackerManager implements PackerManagerInterface {
    * @var \Drupal\commerce_shipping\Packer\PackerInterface[]
    */
   protected $packers = [];
+
+  /**
+   * Constructs a new PackerManager object.
+   *
+   * @param EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
+  }
 
   /**
    * {@inheritdoc}
@@ -44,6 +62,41 @@ class PackerManager implements PackerManagerInterface {
     }
 
     return $proposed_shipments;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function packToShipments(OrderInterface $order, ProfileInterface $shipping_profile, array $shipments) {
+    $shipment_storage = $this->entityTypeManager->getStorage('commerce_shipment');
+    $proposed_shipments = $this->pack($order, $shipping_profile);
+    $populated_shipments = [];
+    foreach ($proposed_shipments as $index => $proposed_shipment) {
+      $shipment = NULL;
+      // Take the first existing shipment of the matching type.
+      foreach ($shipments as $existing_index => $existing_shipment) {
+        if ($existing_shipment->bundle() == $proposed_shipment->getType()) {
+          $shipment = $existing_shipment;
+          unset($shipments[$existing_index]);
+          break;
+        }
+      }
+
+      if (!$shipment) {
+        $shipment = $shipment_storage->create([
+          'type' => $proposed_shipment->getType(),
+        ]);
+      }
+      $shipment->populateFromProposedShipment($proposed_shipment);
+      $shipment->setData('owned_by_packer', TRUE);
+      $populated_shipments[$index] = $shipment;
+    }
+    $removed_shipments = array_filter($shipments, function ($shipment) {
+      /** @var \Drupal\commerce_shipping\Entity\ShipmentInterface $shipment */
+      return !$shipment->isNew();
+    });
+
+    return [$populated_shipments, (array) $removed_shipments];
   }
 
 }

@@ -8,14 +8,13 @@ use Drupal\commerce_price\Price;
 use Drupal\commerce_shipping\Entity\Shipment;
 use Drupal\commerce_shipping\ShipmentItem;
 use Drupal\physical\Weight;
-use Drupal\Tests\commerce\Kernel\CommerceKernelTestBase;
 
 /**
  * Tests the interaction between order and shipping workflows.
  *
  * @group commerce_shipping
  */
-class OrderWorkflowTest extends CommerceKernelTestBase {
+class OrderWorkflowTest extends ShippingKernelTestBase {
 
   /**
    * A sample order.
@@ -34,44 +33,13 @@ class OrderWorkflowTest extends CommerceKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
-    'entity_reference_revisions',
-    'physical',
-    'profile',
-    'state_machine',
-    'commerce_order',
-    'commerce_shipping',
-  ];
-
-  /**
-   * {@inheritdoc}
-   */
   protected function setUp() {
     parent::setUp();
 
-    $this->installEntitySchema('profile');
-    $this->installEntitySchema('commerce_order');
-    $this->installEntitySchema('commerce_shipment');
-    $this->installConfig([
-      'profile',
-      'commerce_order',
-      'commerce_shipping',
-    ]);
-
     $user = $this->createUser(['mail' => $this->randomString() . '@example.com']);
-
-    /** @var \Drupal\commerce_order\Entity\OrderTypeInterface $order_type */
-    $order_type = OrderType::load('default');
-    $order_type->setThirdPartySetting('commerce_shipping', 'shipment_type', 'default');
-    $order_type->save();
-
-    // Create the order field.
-    $field_definition = commerce_shipping_build_shipment_field_definition($order_type->id());
-    \Drupal::service('commerce.configurable_field_manager')->createField($field_definition);
-
     /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
     $order = Order::create([
-      'type' => $order_type->id(),
+      'type' => 'default',
       'state' => 'draft',
       'mail' => $user->getEmail(),
       'uid' => $user->id(),

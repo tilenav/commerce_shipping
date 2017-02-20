@@ -186,10 +186,11 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
     $available_countries = [];
     foreach ($store->get('shipping_countries') as $country_item) {
       $available_countries[] = $country_item->value;
-    };
+    }
 
     // Prepare the form for ajax.
-    $pane_form['#wrapper_id'] = Html::getUniqueId('shipping-information-wrapper');
+    // Not using Html::getUniqueId() on the wrapper ID to avoid #2675688.
+    $pane_form['#wrapper_id'] = 'shipping-information-wrapper';
     $pane_form['#prefix'] = '<div id="' . $pane_form['#wrapper_id'] . '">';
     $pane_form['#suffix'] = '</div>';
 
@@ -206,6 +207,10 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
       '#ajax' => [
         'callback' => [get_class($this), 'ajaxRefresh'],
         'wrapper' => $pane_form['#wrapper_id'],
+      ],
+      // The calculation process only needs a valid shipping profile.
+      '#limit_validation_errors' => [
+        array_merge($pane_form['#parents'], ['shipping_profile']),
       ],
     ];
     $pane_form['removed_shipments'] = [

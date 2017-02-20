@@ -5,8 +5,10 @@ namespace Drupal\Tests\commerce_shipping\FunctionalJavascript;
 use Drupal\commerce_checkout\Entity\CheckoutFlow;
 use Drupal\commerce_order\Entity\Order;
 use Drupal\commerce_order\Entity\OrderType;
+use Drupal\commerce_payment\Entity\PaymentGateway;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_product\Entity\ProductVariationType;
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Tests\commerce\Functional\CommerceBrowserTestBase;
 use Drupal\Tests\commerce\FunctionalJavascript\JavascriptTestTrait;
 
@@ -37,6 +39,8 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
    * {@inheritdoc}
    */
   public static $modules = [
+    'commerce_payment',
+    'commerce_payment_example',
     'commerce_shipping_test',
   ];
 
@@ -59,12 +63,24 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
     $this->store->shipping_countries = ['US', 'FR', 'DE'];
     $this->store->save();
 
+    /** @var \Drupal\commerce_payment\Entity\PaymentGateway $gateway */
+    $gateway = PaymentGateway::create([
+      'id' => 'example_onsite',
+      'label' => 'Example',
+      'plugin' => 'example_onsite',
+    ]);
+    $gateway->getPlugin()->setConfiguration([
+      'api_key' => '2342fewfsfs',
+      'payment_method_types' => ['credit_card'],
+    ]);
+    $gateway->save();
+
     $product_variation_type = ProductVariationType::load('default');
     $product_variation_type->setTraits(['purchasable_entity_shippable']);
     $product_variation_type->save();
 
     $order_type = OrderType::load('default');
-    $order_type->setThirdPartySetting('commerce_checkout', 'checkout_flow', 'shipping_test');
+    $order_type->setThirdPartySetting('commerce_checkout', 'checkout_flow', 'shipping');
     $order_type->setThirdPartySetting('commerce_shipping', 'shipment_type', 'default');
     $order_type->save();
 
@@ -157,6 +173,14 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
         ],
       ],
     ]);
+
+    // Workaround for #2822211.
+    /** @var \Drupal\Core\Entity\Display\EntityFormDisplayInterface $customer_form_display */
+    $customer_form_display = EntityFormDisplay::load('profile.customer.default');
+    $address_component = $customer_form_display->getComponent('address');
+    $address_component['settings']['default_country'] = 'US';
+    $customer_form_display->setComponent('address', $address_component);
+    $customer_form_display->save();
   }
 
   /**
@@ -199,7 +223,18 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
     $this->assertNotNull($first_radio_button);
     $this->assertNotNull($second_radio_button);
     $this->assertTrue($first_radio_button->getAttribute('checked'));
-    $this->submitForm([], 'Continue to review');
+    $this->submitForm([
+      'payment_information[add_payment_method][payment_details][number]' => '4111111111111111',
+      'payment_information[add_payment_method][payment_details][expiration][month]' => '02',
+      'payment_information[add_payment_method][payment_details][expiration][year]' => '2020',
+      'payment_information[add_payment_method][payment_details][security_code]' => '123',
+      'payment_information[add_payment_method][billing_information][address][0][address][given_name]' => 'Johnny',
+      'payment_information[add_payment_method][billing_information][address][0][address][family_name]' => 'Appleseed',
+      'payment_information[add_payment_method][billing_information][address][0][address][address_line1]' => '123 New York Drive',
+      'payment_information[add_payment_method][billing_information][address][0][address][locality]' => 'New York City',
+      'payment_information[add_payment_method][billing_information][address][0][address][administrative_area]' => 'NY',
+      'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '10001',
+    ], 'Continue to review');
 
     // Confirm that the review is rendered correctly.
     $this->assertSession()->pageTextContains('Shipping information');
@@ -269,7 +304,18 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
       $this->assertSession()->elementTextContains('xpath', $selector, 'Standard shipping: $9.99');
       $this->assertSession()->elementTextContains('xpath', $selector, 'Overnight shipping: $19.99');
     }
-    $this->submitForm([], 'Continue to review');
+    $this->submitForm([
+      'payment_information[add_payment_method][payment_details][number]' => '4111111111111111',
+      'payment_information[add_payment_method][payment_details][expiration][month]' => '02',
+      'payment_information[add_payment_method][payment_details][expiration][year]' => '2020',
+      'payment_information[add_payment_method][payment_details][security_code]' => '123',
+      'payment_information[add_payment_method][billing_information][address][0][address][given_name]' => 'Johnny',
+      'payment_information[add_payment_method][billing_information][address][0][address][family_name]' => 'Appleseed',
+      'payment_information[add_payment_method][billing_information][address][0][address][address_line1]' => '123 New York Drive',
+      'payment_information[add_payment_method][billing_information][address][0][address][locality]' => 'New York City',
+      'payment_information[add_payment_method][billing_information][address][0][address][administrative_area]' => 'NY',
+      'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '10001',
+    ], 'Continue to review');
 
     // Confirm that the review is rendered correctly.
     $this->assertSession()->pageTextContains('Shipping information');
@@ -318,7 +364,7 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
    * Tests checkout when the shipping profile is not required for showing costs.
    */
   public function testNoRequiredShippingProfile() {
-    $checkout_flow = CheckoutFlow::load('shipping_test');
+    $checkout_flow = CheckoutFlow::load('shipping');
     $checkout_flow_configuration = $checkout_flow->get('configuration');
     $checkout_flow_configuration['panes']['shipping_information']['require_shipping_profile'] = FALSE;
     $checkout_flow->set('configuration', $checkout_flow_configuration);
@@ -354,7 +400,18 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
     foreach ($address as $property => $value) {
       $page->fillField($address_prefix . '[' . $property . ']', $value);
     }
-    $this->submitForm([], 'Continue to review');
+    $this->submitForm([
+      'payment_information[add_payment_method][payment_details][number]' => '4111111111111111',
+      'payment_information[add_payment_method][payment_details][expiration][month]' => '02',
+      'payment_information[add_payment_method][payment_details][expiration][year]' => '2020',
+      'payment_information[add_payment_method][payment_details][security_code]' => '123',
+      'payment_information[add_payment_method][billing_information][address][0][address][given_name]' => 'Johnny',
+      'payment_information[add_payment_method][billing_information][address][0][address][family_name]' => 'Appleseed',
+      'payment_information[add_payment_method][billing_information][address][0][address][address_line1]' => '123 New York Drive',
+      'payment_information[add_payment_method][billing_information][address][0][address][locality]' => 'New York City',
+      'payment_information[add_payment_method][billing_information][address][0][address][administrative_area]' => 'NY',
+      'payment_information[add_payment_method][billing_information][address][0][address][postal_code]' => '10001',
+    ], 'Continue to review');
 
     // Confirm that the review is rendered correctly.
     $this->assertSession()->pageTextContains('Shipping information');

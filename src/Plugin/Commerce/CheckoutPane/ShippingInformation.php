@@ -222,9 +222,9 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
     ];
 
     $shipments = $this->order->shipments->referencedEntities();
-    $triggering_element = $form_state->getTriggeringElement();
+    $recalculate_shipping = $form_state->get('recalculate_shipping');
     $force_packing = empty($shipments) && empty($this->configuration['require_shipping_profile']);
-    if (!empty($triggering_element['#recalculate']) || $force_packing) {
+    if ($recalculate_shipping || $force_packing) {
       list($shipments, $removed_shipments) = $this->packerManager->packToShipments($this->order, $shipping_profile, $shipments);
 
       // Store the IDs of removed shipments for submitPaneForm().
@@ -266,14 +266,26 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function validatePaneForm(array &$pane_form, FormStateInterface $form_state, array &$complete_form) {
+    $shipment_indexes = Element::children($pane_form['shipments']);
     $triggering_element = $form_state->getTriggeringElement();
-    if (!empty($triggering_element['#recalculate'])) {
+    $recalculate = !empty($triggering_element['#recalculate']);
+    $button_type = isset($triggering_element['#button_type']) ? $triggering_element['#button_type'] : '';
+    if (!$recalculate && $button_type == 'primary' && empty($shipment_indexes)) {
+      // The checkout step was submitted without shipping being calculated.
+      // Force the recalculation now and reload the page.
+      $recalculate = TRUE;
+      drupal_set_message('Please select a shipping method.', 'error');
+      $form_state->setRebuild(TRUE);
+    }
+
+    if ($recalculate) {
+      $form_state->set('recalculate_shipping', TRUE);
       // The profile in form state needs to reflect the submitted values, since
       // it will be passed to the packers when the form is rebuilt.
       $form_state->set('shipping_profile', $pane_form['shipping_profile']['#profile']);
     }
 
-    foreach (Element::children($pane_form['shipments']) as $index) {
+    foreach ($shipment_indexes as $index) {
       $shipment = clone $pane_form['shipments'][$index]['#shipment'];
       $form_display = EntityFormDisplay::collectRenderDisplay($shipment, 'default');
       $form_display->removeComponent('shipping_profile');

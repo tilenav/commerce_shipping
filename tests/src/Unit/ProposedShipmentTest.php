@@ -6,6 +6,7 @@ use Drupal\commerce_price\Price;
 use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
 use Drupal\physical\Weight;
+use Drupal\profile\Entity\ProfileInterface;
 use Drupal\Tests\UnitTestCase;
 
 /**
@@ -27,6 +28,9 @@ class ProposedShipmentTest extends UnitTestCase {
   protected function setUp() {
     parent::setUp();
 
+    $shipping_profile = $this->prophesize(ProfileInterface::class);
+    $shipping_profile->id()->willReturn(11);
+
     $this->proposedShipment = new ProposedShipment([
       'type' => 'default',
       'order_id' => 10,
@@ -40,7 +44,7 @@ class ProposedShipmentTest extends UnitTestCase {
           'declared_value' => new Price('10', 'USD'),
         ]),
       ],
-      'shipping_profile_id' => 11,
+      'shipping_profile' => $shipping_profile->reveal(),
       'package_type_id' => 'default',
       'custom_fields' => [
         'field_test' => 'value',
@@ -86,10 +90,10 @@ class ProposedShipmentTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::getShippingProfileId
+   * @covers ::getShippingProfile
    */
-  public function testGetShippingProfileId() {
-    $this->assertEquals(11, $this->proposedShipment->getShippingProfileId());
+  public function testGetShippingProfile() {
+    $this->assertEquals(11, $this->proposedShipment->getShippingProfile()->id());
   }
 
   /**
@@ -115,7 +119,6 @@ class ProposedShipmentTest extends UnitTestCase {
       'type' => 'default',
       'order_id' => 10,
       'title' => 'Test shipment',
-      'shipping_profile_id' => 11,
       'package_type_id' => 'default',
     ]);
   }
@@ -130,7 +133,7 @@ class ProposedShipmentTest extends UnitTestCase {
       'order_id' => 10,
       'title' => 'Test shipment',
       'items' => ['invalid'],
-      'shipping_profile_id' => 11,
+      'shipping_profile' => $this->prophesize(ProfileInterface::class)->reveal(),
       'package_type_id' => 'default',
     ]);
   }

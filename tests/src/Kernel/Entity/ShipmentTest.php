@@ -247,7 +247,7 @@ class ShipmentTest extends CommerceKernelTestBase {
           'declared_value' => new Price('15', 'USD'),
         ]),
       ],
-      'shipping_profile_id' => $profile->id(),
+      'shipping_profile' => $profile,
       'package_type_id' => 'custom_box',
       // State is not a custom field, but it simplifies this test.
       'custom_fields' => [

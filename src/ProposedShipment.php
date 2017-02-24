@@ -41,11 +41,14 @@ class ProposedShipment {
   protected $items = [];
 
   /**
-   * The shipping profile ID.
+   * The shipping profile.
    *
-   * @var int
+   * We can't store just the profile ID because
+   * the profile entity might not be saved yet.
+   *
+   * @var \Drupal\profile\Entity\ProfileInterface
    */
-  protected $shippingProfileId;
+  protected $shippingProfile;
 
   /**
    * The package type plugin ID.
@@ -68,7 +71,7 @@ class ProposedShipment {
    *   The definition.
    */
   public function __construct(array $definition) {
-    foreach (['type', 'order_id', 'title', 'items'] as $required_property) {
+    foreach (['type', 'order_id', 'title', 'items', 'shipping_profile'] as $required_property) {
       if (empty($definition[$required_property])) {
         throw new \InvalidArgumentException(sprintf('Missing required property "%s".', $required_property));
       }
@@ -83,9 +86,7 @@ class ProposedShipment {
     $this->orderId = $definition['order_id'];
     $this->title = $definition['title'];
     $this->items = $definition['items'];
-    if (!empty($definition['shipping_profile_id'])) {
-      $this->shippingProfileId = $definition['shipping_profile_id'];
-    }
+    $this->shippingProfile = $definition['shipping_profile'];
     if (!empty($definition['package_type_id'])) {
       $this->packageTypeId = $definition['package_type_id'];
     }
@@ -135,13 +136,13 @@ class ProposedShipment {
   }
 
   /**
-   * Gets the shipping profile ID.
+   * Gets the shipping profile.
    *
-   * @return int
-   *   The shipping profile ID.
+   * @return \Drupal\profile\Entity\ProfileInterface\null
+   *   The shipping profile, or NULL if unknown.
    */
-  public function getShippingProfileId() {
-    return $this->shippingProfileId;
+  public function getShippingProfile() {
+    return $this->shippingProfile;
   }
 
   /**

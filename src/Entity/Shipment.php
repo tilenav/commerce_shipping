@@ -62,19 +62,12 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
     $this->set('order_id', $proposed_shipment->getOrderId());
     $this->set('title', $proposed_shipment->getTitle());
     $this->set('items', $proposed_shipment->getItems());
+    $this->set('shipping_profile', $proposed_shipment->getShippingProfile());
     $this->set('package_type', $proposed_shipment->getPackageTypeId());
     foreach ($proposed_shipment->getCustomFields() as $field_name => $value) {
       if ($this->hasField($field_name)) {
         $this->set($field_name, $value);
       }
-    }
-    if ($shipping_profile_id = $proposed_shipment->getShippingProfileId()) {
-      // @todo
-      // Remove this workaround when entity_reference_revisions gets
-      // fixed to accept just the target_id.
-      $profile_storage = $this->entityTypeManager()->getStorage('profile');
-      $shipping_profile = $profile_storage->load($proposed_shipment->getShippingProfileId());
-      $this->set('shipping_profile', $shipping_profile);
     }
     // @todo Reset the shipping method/service/amount if the items changed.
   }

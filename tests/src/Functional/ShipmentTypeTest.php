@@ -112,7 +112,7 @@ class ShipmentTypeTest extends CommerceBrowserTestBase {
       'items' => [
         new ShipmentItem([
           'order_item_id' => 10,
-          'label' => 'Test',
+          'title' => 'Test',
           'quantity' => 1,
           'weight' => new Weight(0, 'g'),
           'declared_value' => new Price('1', 'USD'),

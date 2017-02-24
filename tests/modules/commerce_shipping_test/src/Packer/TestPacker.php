@@ -57,7 +57,7 @@ class TestPacker implements PackerInterface {
             'declared_value' => $order_item->getUnitPrice()->multiply($quantity),
           ]),
         ],
-        'shipping_profile_id' => $shipping_profile->id(),
+        'shipping_profile' => $shipping_profile,
       ]);
     }
 

@@ -75,7 +75,7 @@ class DefaultPacker implements PackerInterface {
         'order_id' => $order->id(),
         'title' => t('Shipment #1'),
         'items' => $items,
-        'shipping_profile_id' => $shipping_profile->id(),
+        'shipping_profile' => $shipping_profile,
       ]);
     }
 

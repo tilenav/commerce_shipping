@@ -101,7 +101,7 @@ class DefaultPackerTest extends UnitTestCase {
           'declared_value' => new Price('45', 'USD'),
         ]),
       ],
-      'shipping_profile_id' => 3,
+      'shipping_profile' => $shipping_profile,
     ]);
     $result = $this->packer->pack($order, $shipping_profile);
     $this->assertEquals([$expected_proposed_shipment], $result);

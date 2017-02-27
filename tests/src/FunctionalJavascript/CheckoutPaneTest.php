@@ -173,14 +173,6 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
         ],
       ],
     ]);
-
-    // Workaround for #2822211.
-    /** @var \Drupal\Core\Entity\Display\EntityFormDisplayInterface $customer_form_display */
-    $customer_form_display = EntityFormDisplay::load('profile.customer.default');
-    $address_component = $customer_form_display->getComponent('address');
-    $address_component['settings']['default_country'] = 'US';
-    $customer_form_display->setComponent('address', $address_component);
-    $customer_form_display->save();
   }
 
   /**

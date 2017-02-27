@@ -12,7 +12,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\RendererInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -51,13 +50,6 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
   protected $orderShipmentSummary;
 
   /**
-   * The renderer.
-   *
-   * @var \Drupal\Core\Render\RendererInterface
-   */
-  protected $renderer;
-
-  /**
    * Constructs a new ShippingInformation object.
    *
    * @param array $configuration
@@ -74,16 +66,13 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
    *   The packer manager.
    * @param \Drupal\commerce_shipping\OrderShipmentSummaryInterface $order_shipment_summary
    *   The order shipment summary.
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, CheckoutFlowInterface $checkout_flow, EntityTypeManagerInterface $entity_type_manager, PackerManagerInterface $packer_manager, OrderShipmentSummaryInterface $order_shipment_summary, RendererInterface $renderer) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, CheckoutFlowInterface $checkout_flow, EntityTypeManagerInterface $entity_type_manager, PackerManagerInterface $packer_manager, OrderShipmentSummaryInterface $order_shipment_summary) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $checkout_flow);
 
     $this->entityTypeManager = $entity_type_manager;
     $this->packerManager = $packer_manager;
     $this->orderShipmentSummary = $order_shipment_summary;
-    $this->renderer = $renderer;
   }
 
   /**
@@ -97,8 +86,7 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
       $checkout_flow,
       $container->get('entity_type.manager'),
       $container->get('commerce_shipping.packer_manager'),
-      $container->get('commerce_shipping.order_shipment_summary'),
-      $container->get('renderer')
+      $container->get('commerce_shipping.order_shipment_summary')
     );
   }
 
@@ -163,12 +151,10 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function buildPaneSummary() {
-    if (!$this->isVisible()) {
-      return '';
+    $summary = [];
+    if ($this->isVisible()) {
+      $summary = $this->orderShipmentSummary->build($this->order);
     }
-    $summary = $this->orderShipmentSummary->build($this->order);
-    $summary = $this->renderer->render($summary);
-
     return $summary;
   }
 

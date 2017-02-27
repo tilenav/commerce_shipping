@@ -27,6 +27,13 @@ class ShippingMethodListBuilder extends EntityListBuilder implements FormInterfa
   protected $entities = [];
 
   /**
+   * Whether tabledrag is enabled.
+   *
+   * @var bool
+   */
+  protected $hasTableDrag = TRUE;
+
+  /**
    * The form builder.
    *
    * @var \Drupal\Core\Form\FormBuilderInterface
@@ -58,7 +65,9 @@ class ShippingMethodListBuilder extends EntityListBuilder implements FormInterfa
   public function buildHeader() {
     $header['name'] = $this->t('Name');
     $header['status'] = $this->t('Enabled');
-    $header['weight'] = $this->t('Weight');
+    if ($this->hasTableDrag) {
+      $header['weight'] = $this->t('Weight');
+    }
     return $header + parent::buildHeader();
   }
 
@@ -71,13 +80,15 @@ class ShippingMethodListBuilder extends EntityListBuilder implements FormInterfa
     $row['#weight'] = $entity->getWeight();
     $row['name'] = $entity->label();
     $row['status'] = $entity->isEnabled() ? $this->t('Enabled') : $this->t('Disabled');
-    $row['weight'] = [
-      '#type' => 'weight',
-      '#title' => $this->t('Weight for @title', ['@title' => $entity->label()]),
-      '#title_display' => 'invisible',
-      '#default_value' => $entity->getWeight(),
-      '#attributes' => ['class' => ['weight']],
-    ];
+    if ($this->hasTableDrag) {
+      $row['weight'] = [
+        '#type' => 'weight',
+        '#title' => $this->t('Weight for @title', ['@title' => $entity->label()]),
+        '#title_display' => 'invisible',
+        '#default_value' => $entity->getWeight(),
+        '#attributes' => ['class' => ['weight']],
+      ];
+    }
 
     return $row + parent::buildRow($entity);
   }
@@ -93,26 +104,22 @@ class ShippingMethodListBuilder extends EntityListBuilder implements FormInterfa
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form[$this->entitiesKey] = [
-      '#type' => 'table',
-      '#header' => $this->buildHeader(),
-      '#empty' => $this->t('There is no @label yet.', ['@label' => $this->entityType->getLabel()]),
-      '#tabledrag' => [
-        [
-          'action' => 'order',
-          'relationship' => 'sibling',
-          'group' => 'weight',
-        ],
-      ],
-    ];
-
     $this->entities = $this->load();
+    if (count($this->entities) <= 1) {
+      $this->hasTableDrag = FALSE;
+    }
     $delta = 10;
-    // Change the delta of the weight field if have more than 20 entities.
+    // Dynamically expand the allowed delta based on the number of entities.
     $count = count($this->entities);
     if ($count > 20) {
       $delta = ceil($count / 2);
     }
+
+    $form[$this->entitiesKey] = [
+      '#type' => 'table',
+      '#header' => $this->buildHeader(),
+      '#empty' => $this->t('There are no @label yet.', ['@label' => $this->entityType->getPluralLabel()]),
+    ];
     foreach ($this->entities as $entity) {
       $row = $this->buildRow($entity);
       if (isset($row['name'])) {
@@ -127,12 +134,19 @@ class ShippingMethodListBuilder extends EntityListBuilder implements FormInterfa
       $form[$this->entitiesKey][$entity->id()] = $row;
     }
 
-    $form['actions']['#type'] = 'actions';
-    $form['actions']['submit'] = [
-      '#type' => 'submit',
-      '#value' => t('Save'),
-      '#button_type' => 'primary',
-    ];
+    if ($this->hasTableDrag) {
+      $form[$this->entitiesKey]['#tabledrag'][] = [
+        'action' => 'order',
+        'relationship' => 'sibling',
+        'group' => 'weight',
+      ];
+      $form['actions']['#type'] = 'actions';
+      $form['actions']['submit'] = [
+        '#type' => 'submit',
+        '#value' => t('Save'),
+        '#button_type' => 'primary',
+      ];
+    }
 
     return $form;
   }

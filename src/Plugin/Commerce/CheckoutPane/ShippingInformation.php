@@ -143,8 +143,19 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function isVisible() {
-    // @todo Check that the order contains at least one shippable entity.
-    return $this->order->hasField('shipments');
+    if (!$this->order->hasField('shipments')) {
+      return FALSE;
+    }
+
+    // The order must contain at least one shippable purchasable entity.
+    foreach ($this->order->getItems() as $order_item) {
+      $purchased_entity = $order_item->getPurchasedEntity();
+      if ($purchased_entity && $purchased_entity->hasField('weight')) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
   }
 
   /**

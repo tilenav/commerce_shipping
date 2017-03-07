@@ -117,10 +117,16 @@ class ShippingRateWidget extends WidgetBase implements ContainerFactoryPluginInt
       }
     }
 
-    $option_ids = array_keys($options);
+    if (!empty($shipment->getShippingMethodId())) {
+      $default_value = $shipment->getShippingMethodId() . '--' . $shipment->getShippingService();
+    }
+    else {
+      $option_ids = array_keys($options);
+      $default_value = reset($option_ids);
+    }
     $element['#type'] = 'radios';
     $element['#options'] = array_column($options, 'label', 'id');
-    $element['#default_value'] = reset($option_ids);
+    $element['#default_value'] = $default_value;
     // Store relevant data for extractFormValues().
     foreach ($options as $option_id => $option) {
       $element[$option_id]['#shipping_method_id'] = $option['shipping_method_id'];

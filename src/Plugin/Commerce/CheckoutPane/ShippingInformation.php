@@ -29,13 +29,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPluginInterface {
 
   /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
    * The packer manager.
    *
    * @var \Drupal\commerce_shipping\PackerManagerInterface
@@ -68,9 +61,8 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
    *   The order shipment summary.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, CheckoutFlowInterface $checkout_flow, EntityTypeManagerInterface $entity_type_manager, PackerManagerInterface $packer_manager, OrderShipmentSummaryInterface $order_shipment_summary) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $checkout_flow);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $checkout_flow, $entity_type_manager);
 
-    $this->entityTypeManager = $entity_type_manager;
     $this->packerManager = $packer_manager;
     $this->orderShipmentSummary = $order_shipment_summary;
   }

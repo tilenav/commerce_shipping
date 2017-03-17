@@ -68,6 +68,9 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       if ($this->hasField($field_name)) {
         $this->set($field_name, $value);
       }
+      else {
+        $this->setData($field_name, $value);
+      }
     }
     // @todo Reset the shipping method/service/amount if the items changed.
   }

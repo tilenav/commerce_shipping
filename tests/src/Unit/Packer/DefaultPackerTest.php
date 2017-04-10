@@ -113,6 +113,21 @@ namespace Drupal\commerce_shipping\Packer;
 
 if (!function_exists('t')) {
 
+  /**
+   * Fallback function to simulate translation used in Drupal.
+   *
+   * Only used if t function is not availavble for some reason.
+   *
+   * @see t().
+   *
+   * @param string $string
+   *   String to fake translate.
+   * @param array $args
+   *   Placeholder values to be inserted into the string.
+   *
+   * @return string
+   *   The string the was fake translated.
+   */
   function t($string, array $args = []) {
     return strtr($string, $args);
   }

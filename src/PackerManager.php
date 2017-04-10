@@ -12,7 +12,7 @@ class PackerManager implements PackerManagerInterface {
   /**
    * The entity type manager.
    *
-   * @var EntityTypeManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
@@ -26,7 +26,7 @@ class PackerManager implements PackerManagerInterface {
   /**
    * Constructs a new PackerManager object.
    *
-   * @param EntityTypeManagerInterface $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager) {

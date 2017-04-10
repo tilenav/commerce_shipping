@@ -25,6 +25,7 @@ interface ShippingMethodInterface extends ConfigurablePluginInterface, PluginFor
    * Gets the default package type.
    *
    * @return \Drupal\commerce_shipping\Plugin\Commerce\PackageType\PackageTypeInterface
+   *   The default package type.
    */
   public function getDefaultPackageType();
 

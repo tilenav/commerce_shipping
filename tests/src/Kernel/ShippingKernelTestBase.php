@@ -9,7 +9,7 @@ use Drupal\Tests\commerce\Kernel\CommerceKernelTestBase;
 /**
  * Provides a base class for Shipping kernel tests.
  */
-class ShippingKernelTestBase extends CommerceKernelTestBase {
+abstract class ShippingKernelTestBase extends CommerceKernelTestBase {
 
   /**
    * {@inheritdoc}

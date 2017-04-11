@@ -29,13 +29,6 @@ class PackageTypeTest extends CommerceBrowserTestBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  protected function setUp() {
-    parent::setUp();
-  }
-
-  /**
    * Tests creating a package type.
    */
   public function testPackageTypeCreation() {

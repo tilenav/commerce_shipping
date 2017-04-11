@@ -38,16 +38,6 @@ class ShippingMethodPluginCollection extends DefaultSingleLazyPluginCollection {
 
   /**
    * {@inheritdoc}
-   *
-   * @return \Drupal\commerce_shipping\Plugin\Commerce\ShippingMethod\ShippingMethodInterface
-   *   The shipping_method plugin.
-   */
-  public function &get($instance_id) {
-    return parent::get($instance_id);
-  }
-
-  /**
-   * {@inheritdoc}
    */
   protected function initializePlugin($instance_id) {
     if (!$instance_id) {

@@ -331,6 +331,7 @@ class ShippingInformation extends CheckoutPaneBase implements ContainerFactoryPl
     if (!$shipping_profile) {
       $shipping_profile = $this->entityTypeManager->getStorage('profile')->create([
         'type' => 'customer',
+        'uid' => $this->order->getCustomerId(),
       ]);
     }
 

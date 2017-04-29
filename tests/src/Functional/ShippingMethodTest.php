@@ -36,13 +36,13 @@ class ShippingMethodTest extends CommerceBrowserTestBase {
     $this->getSession()->getPage()->clickLink('Add shipping method');
     $this->assertSession()->addressEquals('admin/commerce/config/shipping-methods/add');
     $this->assertSession()->fieldExists('name[0][value]');
-    $this->getSession()->getPage()->fillField('plugin[0][target_plugin_id]', 'flat_rate');
+    $this->getSession()->getPage()->fillField('plugin[0][plugin_select][target_plugin_id]', 'flat_rate');
 
     $name = $this->randomMachineName(8);
     $edit = [
       'name[0][value]' => $name,
-      'plugin[0][target_plugin_configuration][rate_label]' => 'Test label',
-      'plugin[0][target_plugin_configuration][rate_amount][number]' => '10.00',
+      'plugin[0][plugin_select][target_plugin_configuration][rate_label]' => 'Test label',
+      'plugin[0][plugin_select][target_plugin_configuration][rate_amount][number]' => '10.00',
     ];
 
     $this->submitForm($edit, 'Save');
@@ -85,7 +85,7 @@ class ShippingMethodTest extends CommerceBrowserTestBase {
     $new_shipping_method_name = $this->randomMachineName(8);
     $edit = [
       'name[0][value]' => $new_shipping_method_name,
-      'plugin[0][target_plugin_configuration][rate_amount][number]' => '20.00',
+      'plugin[0][plugin_select][target_plugin_configuration][rate_amount][number]' => '20.00',
     ];
     $this->submitForm($edit, 'Save');
 

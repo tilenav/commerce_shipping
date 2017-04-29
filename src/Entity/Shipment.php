@@ -5,7 +5,6 @@ namespace Drupal\commerce_shipping\Entity;
 use Drupal\commerce_shipping\Plugin\Commerce\PackageType\PackageTypeInterface as PackageTypePluginInterface;
 use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
-use Drupal\commerce_order\Adjustment;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
@@ -274,37 +273,6 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
   /**
    * {@inheritdoc}
    */
-  public function getAdjustments() {
-    return $this->get('adjustments')->getAdjustments();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setAdjustments(array $adjustments) {
-    $this->set('adjustments', $adjustments);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function addAdjustment(Adjustment $adjustment) {
-    $this->get('adjustments')->appendItem($adjustment);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function removeAdjustment(Adjustment $adjustment) {
-    $this->get('adjustments')->removeAdjustment($adjustment);
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getTrackingCode() {
     return $this->get('tracking_code')->value;
   }
@@ -515,12 +483,6 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
       ->setLabel(t('Amount'))
       ->setDescription(t('The shipment amount.'))
       ->setReadOnly(TRUE)
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayConfigurable('view', TRUE);
-
-    $fields['adjustments'] = BaseFieldDefinition::create('commerce_adjustment')
-      ->setLabel(t('Adjustments'))
-      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', TRUE);
 

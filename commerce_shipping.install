@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Contains install and update functions for Shipping.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Remove the 'adjustments' field from shipments.
+ */
+function commerce_shipping_update_8200() {
+  $entity_definition_update = \Drupal::entityDefinitionUpdateManager();
+
+  $storage_definition = BaseFieldDefinition::create('commerce_adjustment')
+    ->setLabel(t('Adjustments'))
+    ->setTargetEntityTypeId('commerce_shipment')
+    ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+    ->setDisplayConfigurable('form', FALSE)
+    ->setDisplayConfigurable('view', TRUE);
+  $entity_definition_update->uninstallFieldStorageDefinition($storage_definition);
+}

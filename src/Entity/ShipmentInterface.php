@@ -5,7 +5,6 @@ namespace Drupal\commerce_shipping\Entity;
 use Drupal\commerce_shipping\Plugin\Commerce\PackageType\PackageTypeInterface as PackageTypePluginInterface;
 use Drupal\commerce_shipping\ProposedShipment;
 use Drupal\commerce_shipping\ShipmentItem;
-use Drupal\commerce_order\EntityAdjustableInterface;
 use Drupal\commerce_price\Price;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
@@ -15,7 +14,7 @@ use Drupal\profile\Entity\ProfileInterface;
 /**
  * Defines the interface for shipments.
  */
-interface ShipmentInterface extends ContentEntityInterface, EntityAdjustableInterface, EntityChangedInterface {
+interface ShipmentInterface extends ContentEntityInterface, EntityChangedInterface {
 
   /**
    * Populates the shipment from the given proposed shipment.

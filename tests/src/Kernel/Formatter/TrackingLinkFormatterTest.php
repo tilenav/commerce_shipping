@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\commerce_shipping\tests\Kernel\Formatter;
+namespace Drupal\Tests\commerce_shipping\Kernel\Formatter;
 
 use Drupal\commerce_shipping\Entity\Shipment;
 use Drupal\commerce_shipping\Entity\ShippingMethod;

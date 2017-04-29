@@ -34,7 +34,7 @@ class DefaultPackerTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     $order_type = $this->prophesize(OrderTypeInterface::class);
@@ -114,19 +114,15 @@ namespace Drupal\commerce_shipping\Packer;
 if (!function_exists('t')) {
 
   /**
-   * Fallback function to simulate translation used in Drupal.
-   *
-   * Only used if t function is not availavble for some reason.
-   *
-   * @see t().
+   * Mocks the t() function.
    *
    * @param string $string
-   *   String to fake translate.
+   *   A string containing the English text to translate.
    * @param array $args
-   *   Placeholder values to be inserted into the string.
+   *   (optional) An associative array of replacements to make after translation.
    *
    * @return string
-   *   The string the was fake translated.
+   *   The translated string.
    */
   function t($string, array $args = []) {
     return strtr($string, $args);

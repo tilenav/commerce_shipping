@@ -55,7 +55,7 @@ class CheckoutPaneTest extends CommerceBrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Limit the available countries.

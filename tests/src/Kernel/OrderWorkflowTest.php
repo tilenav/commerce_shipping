@@ -3,6 +3,8 @@
 namespace Drupal\Tests\commerce_shipping\Kernel;
 
 use Drupal\commerce_order\Entity\Order;
+use Drupal\commerce_order\Entity\OrderItem;
+use Drupal\commerce_order\Entity\OrderItemType;
 use Drupal\commerce_order\Entity\OrderType;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_shipping\Entity\Shipment;
@@ -37,6 +39,18 @@ class OrderWorkflowTest extends ShippingKernelTestBase {
     parent::setUp();
 
     $user = $this->createUser(['mail' => $this->randomString() . '@example.com']);
+
+    OrderItemType::create([
+      'id' => 'test',
+      'label' => 'Test',
+      'orderType' => 'default',
+    ])->save();
+    $order_item = OrderItem::create([
+      'type' => 'test',
+      'quantity' => 1,
+      'unit_price' => new Price('12.00', 'USD'),
+    ]);
+    $order_item->save();
     /** @var \Drupal\commerce_order\Entity\OrderInterface $order */
     $order = Order::create([
       'type' => 'default',
@@ -44,6 +58,7 @@ class OrderWorkflowTest extends ShippingKernelTestBase {
       'mail' => $user->getEmail(),
       'uid' => $user->id(),
       'store_id' => $this->store->id(),
+      'order_items' => [$order_item],
     ]);
     $order->save();
     $this->order = $this->reloadEntity($order);

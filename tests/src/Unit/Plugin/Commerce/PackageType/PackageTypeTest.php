@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\commerce_shipping\Unit;
+namespace Drupal\Tests\commerce_shipping\Unit\Plugin\Commerce\PackageType;
 
 use Drupal\commerce_shipping\Plugin\Commerce\PackageType\PackageType;
 use Drupal\physical\Length;
@@ -23,7 +23,7 @@ class PackageTypeTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     $plugin_definition = [

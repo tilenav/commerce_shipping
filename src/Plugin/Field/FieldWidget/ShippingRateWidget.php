@@ -117,7 +117,7 @@ class ShippingRateWidget extends WidgetBase implements ContainerFactoryPluginInt
       }
     }
 
-    if (!empty($shipment->getShippingMethodId())) {
+    if (!empty($shipment->getShippingMethodId()) && array_key_exists($shipment->getShippingMethodId(), $shipping_methods)) {
       $default_value = $shipment->getShippingMethodId() . '--' . $shipment->getShippingService();
     }
     else {

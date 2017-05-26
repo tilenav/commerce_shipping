@@ -17,11 +17,11 @@ class ShippingMethodStorage extends CommerceContentEntityStorage implements Ship
     $query = $this->getQuery();
     $query
       ->condition('stores', $shipment->getOrder()->getStore()->id())
-      ->condition('status', TRUE)
-      ->sort('weight', 'ASC');
+      ->condition('status', TRUE);
     $result = $query->execute();
     $shipping_methods = $result ? $this->loadMultiple($result) : [];
     if (!empty($shipping_methods)) {
+      uasort($shipping_methods, [$this->entityType->getClass(), 'sort']);
       // Allow modules to alter the list of available shipping methods via
       // hook_commerce_shipping_methods_alter(&$shipping_methods, $shipment),
       // as a stop-gap measure until conditions are implemented.

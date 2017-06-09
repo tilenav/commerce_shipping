@@ -230,7 +230,7 @@ class Shipment extends ContentEntityBase implements ShipmentInterface {
   public function getTotalDeclaredValue() {
     $total_declared_value = NULL;
     foreach ($this->getItems() as $item) {
-      $declared_value = $item->getDeclaredValue();;
+      $declared_value = $item->getDeclaredValue();
       $total_declared_value = $total_declared_value ? $total_declared_value->add($declared_value) : $declared_value;
     }
     return $total_declared_value;

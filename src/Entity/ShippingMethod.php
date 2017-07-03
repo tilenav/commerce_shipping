@@ -30,7 +30,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm"
  *     },
  *     "route_provider" = {
- *       "default" = "Drupal\commerce_shipping\ShippingMethodRouteProvider",
+ *       "default" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
  *     },
  *     "translation" = "Drupal\content_translation\ContentTranslationHandler"
  *   },
@@ -47,7 +47,6 @@ use Drupal\Core\Field\BaseFieldDefinition;
  *   },
  *   links = {
  *     "add-form" = "/admin/commerce/config/shipping-methods/add",
- *     "canonical" = "/admin/commerce/config/shipping-methods/manage/{commerce_shipping_method}",
  *     "edit-form" = "/admin/commerce/config/shipping-methods/manage/{commerce_shipping_method}",
  *     "delete-form" = "/admin/commerce/config/shipping-methods/manage/{commerce_shipping_method}/delete",
  *     "collection" =  "/admin/commerce/config/shipping-methods"

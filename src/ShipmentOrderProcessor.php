@@ -53,9 +53,10 @@ class ShipmentOrderProcessor implements OrderProcessorInterface {
       $first_shipment = reset($shipments);
       $shipping_profile = $first_shipment->getShippingProfile();
       list($shipments, $removed_shipments) = $this->packerManager->packToShipments($order, $shipping_profile, $shipments);
-      // @todo Save only the modified shipments.
       foreach ($shipments as $shipment) {
-        $shipment->save();
+        if ($shipment->hasTranslationChanges()) {
+          $shipment->save();
+        }
       }
       // Delete any shipments that are no longer used.
       if (!empty($removed_shipments)) {

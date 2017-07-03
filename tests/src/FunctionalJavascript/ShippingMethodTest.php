@@ -1,9 +1,10 @@
 <?php
 
-namespace Drupal\Tests\commerce_shipping\Functional;
+namespace Drupal\Tests\commerce_shipping\FunctionalJavascript;
 
 use Drupal\commerce_shipping\Entity\ShippingMethod;
 use Drupal\Tests\commerce\Functional\CommerceBrowserTestBase;
+use Drupal\Tests\commerce\FunctionalJavascript\JavascriptTestTrait;
 
 /**
  * Tests the shipping method UI.
@@ -11,6 +12,8 @@ use Drupal\Tests\commerce\Functional\CommerceBrowserTestBase;
  * @group commerce_shipping
  */
 class ShippingMethodTest extends CommerceBrowserTestBase {
+
+  use JavascriptTestTrait;
 
   /**
    * {@inheritdoc}
@@ -36,13 +39,14 @@ class ShippingMethodTest extends CommerceBrowserTestBase {
     $this->getSession()->getPage()->clickLink('Add shipping method');
     $this->assertSession()->addressEquals('admin/commerce/config/shipping-methods/add');
     $this->assertSession()->fieldExists('name[0][value]');
-    $this->getSession()->getPage()->fillField('plugin[0][plugin_select][target_plugin_id]', 'flat_rate');
+    $this->getSession()->getPage()->fillField('plugin[0][target_plugin_id]', 'flat_rate');
+    $this->waitForAjaxToFinish();
 
     $name = $this->randomMachineName(8);
     $edit = [
       'name[0][value]' => $name,
-      'plugin[0][plugin_select][target_plugin_configuration][rate_label]' => 'Test label',
-      'plugin[0][plugin_select][target_plugin_configuration][rate_amount][number]' => '10.00',
+      'plugin[0][target_plugin_configuration][flat_rate][rate_label]' => 'Test label',
+      'plugin[0][target_plugin_configuration][flat_rate][rate_amount][number]' => '10.00',
     ];
 
     $this->submitForm($edit, 'Save');
@@ -85,7 +89,7 @@ class ShippingMethodTest extends CommerceBrowserTestBase {
     $new_shipping_method_name = $this->randomMachineName(8);
     $edit = [
       'name[0][value]' => $new_shipping_method_name,
-      'plugin[0][plugin_select][target_plugin_configuration][rate_amount][number]' => '20.00',
+      'plugin[0][target_plugin_configuration][flat_rate][rate_amount][number]' => '20.00',
     ];
     $this->submitForm($edit, 'Save');
 

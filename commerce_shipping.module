@@ -6,10 +6,26 @@
  */
 
 use Drupal\commerce\BundleFieldDefinition;
+use Drupal\commerce\PurchasableEntityInterface;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_commerce_entity_trait_info_alter().
+ */
+function commerce_shipping_commerce_entity_trait_info_alter(array &$definitions) {
+  // Expose the purchasable entity traits for every purchasable entity type.
+  $entity_types = \Drupal::entityTypeManager()->getDefinitions();
+  $entity_types = array_filter($entity_types, function (EntityTypeInterface $entity_type) {
+    return $entity_type->entityClassImplements(PurchasableEntityInterface::class);
+  });
+  $entity_type_ids = array_keys($entity_types);
+
+  $definitions['purchasable_entity_dimensions']['entity_types'] = $entity_type_ids;
+  $definitions['purchasable_entity_shippable']['entity_types'] = $entity_type_ids;
+}
 
 /**
  * Implements hook_entity_base_field_info().

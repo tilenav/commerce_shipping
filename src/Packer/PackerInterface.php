@@ -10,6 +10,12 @@ use Drupal\profile\Entity\ProfileInterface;
  *
  * Allows sites to automatically split an order into multiple shipments
  * based on stock location, weight, dimensions, or some other criteria.
+ *
+ * Important:
+ * A single order item can be added to multiple shipments only if all
+ * shipments are going to share the same shipping profile.
+ * This limitation is imposed by commerce_tax and CustomerProfileSubscriber
+ * which need to select a shipping profile for each order item.
  */
 interface PackerInterface {
 

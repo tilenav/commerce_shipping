@@ -2,6 +2,8 @@
 
 namespace Drupal\commerce_shipping\Entity;
 
+use Drupal\commerce\ConditionGroup;
+use Drupal\commerce\Plugin\Commerce\Condition\ConditionInterface;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -114,6 +116,49 @@ class ShippingMethod extends ContentEntityBase implements ShippingMethodInterfac
   /**
    * {@inheritdoc}
    */
+  public function getConditions() {
+    $conditions = [];
+    foreach ($this->get('conditions') as $field_item) {
+      /** @var \Drupal\commerce\Plugin\Field\FieldType\PluginItemInterface $field_item */
+      $conditions[] = $field_item->getTargetInstance();
+    }
+    return $conditions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConditions(array $conditions) {
+    $this->set('conditions', []);
+    foreach ($conditions as $condition) {
+      if ($condition instanceof ConditionInterface) {
+        $this->get('conditions')->appendItem([
+          'target_plugin_id' => $condition->getPluginId(),
+          'target_plugin_configuration' => $condition->getConfiguration(),
+        ]);
+      }
+    }
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConditionOperator() {
+    return $this->get('condition_operator')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConditionOperator($condition_operator) {
+    $this->set('condition_operator', $condition_operator);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getWeight() {
     return (int) $this->get('weight')->value;
   }
@@ -139,6 +184,29 @@ class ShippingMethod extends ContentEntityBase implements ShippingMethodInterfac
   public function setEnabled($enabled) {
     $this->set('status', (bool) $enabled);
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function applies(ShipmentInterface $shipment) {
+    $conditions = $this->getConditions();
+    if (!$conditions) {
+      // Shipping methods without conditions always apply.
+      return TRUE;
+    }
+    $order_conditions = array_filter($conditions, function ($condition) {
+      /** @var \Drupal\commerce\Plugin\Commerce\Condition\ConditionInterface $condition */
+      return $condition->getEntityTypeId() == 'commerce_order';
+    });
+    $shipment_conditions = array_filter($conditions, function ($condition) {
+      /** @var \Drupal\commerce\Plugin\Commerce\Condition\ConditionInterface $condition */
+      return $condition->getEntityTypeId() == 'commerce_shipment';
+    });
+    $order_conditions = new ConditionGroup($order_conditions, $this->getConditionOperator());
+    $shipment_conditions = new ConditionGroup($shipment_conditions, $this->getConditionOperator());
+
+    return $order_conditions->evaluate($shipment->getOrder()) && $shipment_conditions->evaluate($shipment);
   }
 
   /**
@@ -205,6 +273,33 @@ class ShippingMethod extends ContentEntityBase implements ShippingMethodInterfac
       ])
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('form', TRUE);
+
+    $fields['conditions'] = BaseFieldDefinition::create('commerce_plugin_item:commerce_condition')
+      ->setLabel(t('Conditions'))
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+      ->setRequired(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'commerce_conditions',
+        'weight' => 3,
+        'settings' => [
+          'entity_types' => ['commerce_order', 'commerce_shipment'],
+        ],
+      ]);
+
+    $fields['condition_operator'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Condition operator'))
+      ->setDescription(t('The condition operator.'))
+      ->setRequired(TRUE)
+      ->setSetting('allowed_values', [
+        'AND' => t('All conditions must pass'),
+        'OR' => t('Only one condition must pass'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_buttons',
+        'weight' => 4,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDefaultValue('AND');
 
     $fields['weight'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Weight'))

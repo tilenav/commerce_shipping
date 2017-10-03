@@ -41,6 +41,42 @@ interface ShippingMethodInterface extends ContentEntityInterface, EntityStoresIn
   public function setName($name);
 
   /**
+   * Gets the shipping method conditions.
+   *
+   * @return \Drupal\commerce\Plugin\Commerce\Condition\ConditionInterface[]
+   *   The shipping method conditions.
+   */
+  public function getConditions();
+
+  /**
+   * Sets the shipping method conditions.
+   *
+   * @param \Drupal\commerce\Plugin\Commerce\Condition\ConditionInterface[] $conditions
+   *   The conditions.
+   *
+   * @return $this
+   */
+  public function setConditions(array $conditions);
+
+  /**
+   * Gets the shipping method condition operator.
+   *
+   * @return string
+   *   The condition operator. Possible values: AND, OR.
+   */
+  public function getConditionOperator();
+
+  /**
+   * Sets the shipping method condition operator.
+   *
+   * @param string $condition_operator
+   *   The condition operator.
+   *
+   * @return $this
+   */
+  public function setConditionOperator($condition_operator);
+
+  /**
    * Gets the shipping method weight.
    *
    * @return string
@@ -75,5 +111,18 @@ interface ShippingMethodInterface extends ContentEntityInterface, EntityStoresIn
    * @return $this
    */
   public function setEnabled($enabled);
+
+  /**
+   * Checks whether the shipping method applies to the given shipment.
+   *
+   * Ensures that the conditions pass.
+   *
+   * @param \Drupal\commerce_shipping\Entity\ShipmentInterface $shipment
+   *   The shipment.
+   *
+   * @return bool
+   *   TRUE if shipping method applies, FALSE otherwise.
+   */
+  public function applies(ShipmentInterface $shipment);
 
 }

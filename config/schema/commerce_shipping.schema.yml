@@ -1,3 +1,20 @@
+commerce.commerce_condition.plugin.shipment_address:
+  type: commerce_condition_configuration
+  mapping:
+    zone:
+      type: address_zone
+      label: 'Zone'
+
+commerce.commerce_condition.plugin.shipment_weight:
+  type: commerce_condition_configuration
+  mapping:
+    operator:
+      type: string
+      label: 'Operator'
+    weight:
+      type: field.value.physical_measurement
+      label: 'Weight'
+
 commerce_order.commerce_order_type.*.third_party.commerce_shipping:
   type: mapping
   label: 'Shipping settings'
@@ -45,6 +62,7 @@ commerce_shipping_method_configuration:
     services:
       type: sequence
       label: 'Services'
+      orderby: value
       sequence:
         type: string
 

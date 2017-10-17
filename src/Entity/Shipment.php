@@ -29,7 +29,7 @@ use Drupal\profile\Entity\ProfileInterface;
  *   ),
  *   bundle_label = @Translation("Shipment type"),
  *   handlers = {
- *     "storage" = "Drupal\commerce\CommerceContentEntityStorage",
+ *     "storage" = "Drupal\commerce_shipping\ShipmentStorage",
  *     "access" = "Drupal\Core\Entity\EntityAccessControlHandler",
  *     "views_data" = "Drupal\views\EntityViewsData"
  *   },

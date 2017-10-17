@@ -8,7 +8,7 @@ use Drupal\Core\Entity\ContentEntityStorageInterface;
 /**
  * Defines the interface for shipment storage.
  */
-interface ShipmentStorageInterface  extends ContentEntityStorageInterface {
+interface ShipmentStorageInterface extends ContentEntityStorageInterface {
 
   /**
    * Loads all shipments for the given order.

@@ -3,11 +3,9 @@
 namespace Drupal\Tests\commerce_shipping\Kernel;
 
 use Drupal\commerce_order\Entity\Order;
-use Drupal\commerce_order\Plugin\Commerce\Condition\OrderEmail;
 use Drupal\commerce_price\Price;
 use Drupal\commerce_shipping\Entity\Shipment;
 use Drupal\commerce_shipping\Entity\ShippingMethod;
-use Drupal\commerce_shipping\Plugin\Commerce\Condition\ShipmentWeight;
 use Drupal\commerce_shipping\ShipmentItem;
 use Drupal\physical\Weight;
 
@@ -222,7 +220,7 @@ class ShippingMethodStorageTest extends ShippingKernelTestBase {
           'target_plugin_configuration' => [
             'mail' => $this->user->getEmail(),
           ],
-        ]
+        ],
       ],
       'status' => TRUE,
     ]);
@@ -251,4 +249,5 @@ class ShippingMethodStorageTest extends ShippingKernelTestBase {
     $this->assertCount(1, $shipping_methods);
     $this->assertEquals($shipping_method2->id(), reset($shipping_methods)->id());
   }
+
 }

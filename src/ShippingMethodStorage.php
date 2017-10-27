@@ -4,6 +4,8 @@ namespace Drupal\commerce_shipping;
 
 use Drupal\commerce\CommerceContentEntityStorage;
 use Drupal\commerce_shipping\Entity\ShipmentInterface;
+use Drupal\commerce_shipping\Event\FilterShippingMethodsEvent;
+use Drupal\commerce_shipping\Event\ShippingEvents;
 
 /**
  * Defines the shipping method storage.
@@ -27,9 +29,10 @@ class ShippingMethodStorage extends CommerceContentEntityStorage implements Ship
     }
     uasort($shipping_methods, [$this->entityType->getClass(), 'sort']);
     if (!empty($shipping_methods)) {
-      // Allow modules to alter the list of available shipping methods via
-      // hook_commerce_shipping_methods_alter(&$shipping_methods, $shipment).
-      \Drupal::moduleHandler()->alter('commerce_shipping_methods', $shipping_methods, $shipment);
+      // Allow the list of shipping methods to be filtered via code.
+      $event = new FilterShippingMethodsEvent($shipping_methods, $shipment);
+      $this->eventDispatcher->dispatch(ShippingEvents::FILTER_SHIPPING_METHODS, $event);
+      $shipping_methods = $event->getShippingMethods();
     }
 
     return $shipping_methods;
